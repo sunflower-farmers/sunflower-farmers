@@ -9,6 +9,7 @@ import { translate } from "lib/i18n/translate";
 import { BuyCurrenciesModal } from "features/island/hud/components/BuyCurrenciesModal";
 import { VIPItems } from "./components/VIPItems";
 import { Panel } from "components/ui/Panel";
+import { ReputationSystem } from "features/island/hud/components/reputation/Reputation";
 
 type GlobalModal =
   | "BUY_GEMS"
@@ -20,7 +21,8 @@ type GlobalModal =
   | "FIREPIT"
   | "BETTY"
   | "BLACKSMITH"
-  | "VIP_ITEMS";
+  | "VIP_ITEMS"
+  | "REPUTATION";
 
 export const ModalContext = createContext<{
   openModal: (type: GlobalModal) => void;
@@ -28,7 +30,7 @@ export const ModalContext = createContext<{
 }>({ openModal: console.log });
 
 export const ModalProvider: FC = ({ children }) => {
-  const [opened, setOpened] = useState<GlobalModal>();
+  const [opened, setOpened] = useState<GlobalModal>("REPUTATION");
   const [closeable, setCloseable] = useState(true);
 
   const openModal = (type: GlobalModal) => {
@@ -65,6 +67,10 @@ export const ModalProvider: FC = ({ children }) => {
 
       <Modal show={opened === "STORE_ON_CHAIN"} onHide={handleClose}>
         <StoreOnChainModal onClose={handleClose} />
+      </Modal>
+
+      <Modal show={opened === "REPUTATION"} onHide={handleClose}>
+        <ReputationSystem onClose={handleClose} />
       </Modal>
 
       <Modal show={opened === "FIRST_EXPANSION"}>

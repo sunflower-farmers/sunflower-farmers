@@ -366,7 +366,7 @@ export const INITIAL_RESOURCES: Pick<
 
 export const INITIAL_EXPANSIONS = 3;
 
-const INITIAL_EQUIPMENT: BumpkinParts = {
+export const INITIAL_EQUIPMENT: BumpkinParts = {
   background: "Farm Background",
   body: "Beige Farmer Potion",
   hair: "Basic Hair",
