@@ -43,15 +43,18 @@ import {
 import { TRADE_LIMITS } from "features/game/actions/tradeLimits";
 import { ITEM_DETAILS } from "features/game/types/images";
 import { calculateTradePoints } from "features/game/events/landExpansion/addTradePoints";
-import { VIPAccess } from "features/game/components/VipAccess";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { MachineState } from "features/game/lib/gameMachine";
 import { getDayOfYear } from "lib/utils/time";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import { StoreOnChain } from "./StoreOnChain";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
-const _isVIP = (state: MachineState) =>
-  hasVipAccess(state.context.state.inventory);
+const _hasTradeReputation = (state: MachineState) =>
+  hasReputation({
+    game: state.context.state,
+    reputation: Reputation.Cropkeeper,
+  });
 
 type TradeableListItemProps = {
   authToken: string;
@@ -81,7 +84,7 @@ export const TradeableListItem: React.FC<TradeableListItemProps> = ({
 
   const { openModal } = useContext(ModalContext);
 
-  const isVIP = useSelector(gameService, _isVIP);
+  const hasTradeReputation = useSelector(gameService, _hasTradeReputation);
 
   const { state } = gameState.context;
 
@@ -97,7 +100,7 @@ export const TradeableListItem: React.FC<TradeableListItemProps> = ({
 
   const dailyListings = getDailyListings();
 
-  const hasAccess = isVIP || dailyListings < 1;
+  const hasAccess = hasTradeReputation || dailyListings < 1;
 
   const tradeType = getTradeType({
     collection: display.type,
@@ -374,14 +377,7 @@ export const TradeableListItem: React.FC<TradeableListItemProps> = ({
         )}
 
         {!hasAccess && (
-          <VIPAccess
-            isVIP={isVIP}
-            onUpgrade={() => {
-              openModal("BUY_BANNER");
-            }}
-            text={t("marketplace.unlockSelling")}
-            labelType={!isVIP && dailyListings >= 1 ? "danger" : undefined}
-          />
+          <RequiredReputation reputation={Reputation.Cropkeeper} />
         )}
       </div>
       <div className="flex justify-between">

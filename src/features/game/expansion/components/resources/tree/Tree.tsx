@@ -25,8 +25,8 @@ import { DepletingTree } from "./components/DepletingTree";
 import { RecoveredTree } from "./components/RecoveredTree";
 import { gameAnalytics } from "lib/gameAnalytics";
 import { getBumpkinLevel } from "features/game/lib/level";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { useSound } from "lib/utils/hooks/useSound";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
 
 const HITS = 3;
 const tool = "Axe";
@@ -63,8 +63,10 @@ const isSeasonedPlayer = (state: MachineState) =>
   getBumpkinLevel(state.context.state.bumpkin?.experience ?? 0) >= 60 &&
   // - verified (personhood verification)
   state.context.verified &&
-  // - has active seasonal banner
-  hasVipAccess(state.context.state.inventory);
+  hasReputation({
+    game: state.context.state,
+    reputation: Reputation.Cropkeeper,
+  });
 
 interface Props {
   id: string;

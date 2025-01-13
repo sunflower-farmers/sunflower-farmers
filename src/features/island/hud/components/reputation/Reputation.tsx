@@ -13,9 +13,20 @@ import {
   Reputation,
   REPUTATION_NAME,
   REPUTATION_TASKS,
+  REPUTATION_TIERS,
 } from "features/game/lib/reputation";
 import { useGame } from "features/game/GameProvider";
 import { hasVipAccess } from "features/game/lib/vipAccess";
+import { ITEM_DETAILS } from "features/game/types/images";
+
+import lockIcon from "assets/icons/lock.png";
+import tradeIcon from "assets/icons/trade.png";
+import sflIcon from "assets/icons/sfl.webp";
+import walletIcon from "assets/icons/wallet.png";
+import hammerinHarry from "assets/npcs/hammerin_harry.webp";
+import salesIcon from "assets/icons/sale.webp";
+import { TranslationKeys } from "lib/i18n/dictionaries/types";
+
 export const MyReputation: React.FC = () => {
   const { openModal } = useContext(ModalContext);
   const { t } = useAppTranslation();
@@ -28,6 +39,25 @@ export const MyReputation: React.FC = () => {
           {`${t("reputation.title")} - ${REPUTATION_NAME[getReputation({ game: gameState.context.state })]}`}
         </Label>
         <p className="text-xs">{t("reputation.description")}</p>
+      </div>
+    </ButtonPanel>
+  );
+};
+
+export const RequiredReputation: React.FC<{
+  reputation: Reputation;
+  text?: string;
+}> = ({ reputation, text }) => {
+  const { openModal } = useContext(ModalContext);
+  const { t } = useAppTranslation();
+
+  return (
+    <ButtonPanel onClick={() => openModal("REPUTATION")}>
+      <div className="flex flex-col">
+        <Label type="danger" icon={lockIcon}>
+          {`${REPUTATION_NAME[reputation]}`}
+        </Label>
+        <p className="text-xs">{text ?? t("reputation.description")}</p>
       </div>
     </ButtonPanel>
   );
@@ -49,7 +79,7 @@ export const ReputationSystem: React.FC<{
           name: "Tiers",
         },
         {
-          icon: SUNNYSIDE.icons.heart,
+          icon: salesIcon,
           name: "Earn points",
         },
       ]}
@@ -67,120 +97,129 @@ export const ReputationTiers: React.FC = () => {
 
   return (
     <div className="p-2 scrollable overflow-y-scroll max-h-[350px]">
-      <Label type="default" icon={SUNNYSIDE.icons.plant} className="mb-1">
-        {t("reputation.sprout")}
-      </Label>
+      <p className="text-xs mb-2">{t("reputation.description")}</p>
+
+      <div className="flex items-center mb-1 mt-2">
+        <Label type="default" icon={SUNNYSIDE.crops.sprout} className="mr-2">
+          {t("reputation.sprout")}
+        </Label>
+        <Label type="warning">
+          {t("reputation.points", {
+            amount: REPUTATION_TIERS[Reputation.Sprout],
+          })}
+        </Label>
+      </div>
+
       <NoticeboardItems
         items={[
           {
             text: t("reputation.sprout.description"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: lockIcon,
           },
         ]}
       />
 
       <div className="flex items-center mb-1 mt-2">
-        <Label type="default" icon={SUNNYSIDE.icons.plant} className="mr-2">
+        <Label type="default" icon={SUNNYSIDE.crops.seedling} className="mr-2">
           {t("reputation.seedling")}
         </Label>
-        <Label type="transparent">
-          {t("reputation.points", { amount: 250 })}
+        <Label type="warning">
+          {t("reputation.points", {
+            amount: REPUTATION_TIERS[Reputation.Seedling],
+          })}
         </Label>
       </div>
       <NoticeboardItems
         items={[
           {
             text: t("reputation.seedling.trades"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: tradeIcon,
           },
           {
             text: t("reputation.seedling.deliveries"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: sflIcon,
           },
           {
             text: t("reputation.seedling.nft"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: ITEM_DETAILS["Grinx's Hammer"].image,
           },
         ]}
       />
 
       <div className="flex items-center mb-1 mt-2">
-        <Label type="default" icon={SUNNYSIDE.icons.plant} className="mr-2">
+        <Label type="default" icon={SUNNYSIDE.crops.grower} className="mr-2">
           {t("reputation.grower")}
         </Label>
-        <Label type="transparent">
-          {t("reputation.points", { amount: 350 })}
+        <Label type="warning">
+          {t("reputation.points", {
+            amount: REPUTATION_TIERS[Reputation.Grower],
+          })}
         </Label>
       </div>
       <NoticeboardItems
         items={[
           {
             text: t("reputation.grower.description"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: walletIcon,
           },
-        ]}
-      />
-      <NoticeboardItems
-        items={[
           {
             text: t("reputation.grower.trades"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: SUNNYSIDE.icons.player,
           },
           {
-            text: t("reputation.grower.deliveries"),
-            icon: SUNNYSIDE.icons.basket,
+            text: t("reputation.grower.auctions"),
+            icon: hammerinHarry,
           },
           {
             text: t("reputation.grower.sfl"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: sflIcon,
           },
         ]}
       />
       <div className="flex items-center mb-1 mt-2">
-        <Label type="default" icon={SUNNYSIDE.icons.plant} className="mr-2">
+        <Label
+          type="default"
+          icon={ITEM_DETAILS["Sunflower"].image}
+          className="mr-2"
+        >
           {t("reputation.cropkeeper")}
         </Label>
-        <Label type="transparent">
-          {t("reputation.points", { amount: 600 })}
+        <Label type="warning">
+          {t("reputation.points", {
+            amount: REPUTATION_TIERS[Reputation.Cropkeeper],
+          })}
         </Label>
       </div>
       <NoticeboardItems
         items={[
           {
-            text: t("reputation.cropkeeper.description"),
-            icon: SUNNYSIDE.icons.basket,
-          },
-        ]}
-      />
-      <NoticeboardItems
-        items={[
-          {
             text: t("reputation.cropkeeper.trades"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: tradeIcon,
           },
           {
-            text: t("reputation.cropkeeper.deliveries"),
-            icon: SUNNYSIDE.icons.basket,
+            text: t("reputation.cropkeeper.description"),
+            icon: sflIcon,
           },
+
           {
             text: t("reputation.cropkeeper.resources"),
-            icon: SUNNYSIDE.icons.basket,
+            icon: ITEM_DETAILS.Eggplant.image,
           },
         ]}
       />
 
       <div className="flex items-center mb-1 mt-2">
         <Label
-          type={
-            reputation >= Reputation.GrandHarvester ? "transparent" : "default"
-          }
-          icon={SUNNYSIDE.icons.plant}
+          type={"default"}
+          icon={ITEM_DETAILS["Black Magic"].image}
           className="mr-2"
         >
           {t("reputation.grandHarvester")}
         </Label>
-        <Label type="transparent">
-          {t("reputation.points", { amount: 800 })}
+        <Label type="warning">
+          {t("reputation.points", {
+            amount: REPUTATION_TIERS[Reputation.GrandHarvester],
+          })}
         </Label>
       </div>
       <NoticeboardItems
@@ -202,88 +241,96 @@ export const ReputationPoints: React.FC = () => {
 
   const points = getReputationPoints({ game: gameState.context.state });
   return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <Label type="default">{t("reputation.points.title")}</Label>
-        <Label className="mr-2" type="transparent">
-          {t("reputation.points.amount", { points })}
-        </Label>
-      </div>
-      <p className="text-xs mb-2">{t("reputation.points.description")}</p>
+    <>
+      <div className="p-1">
+        <div className="flex justify-between items-center mb-2">
+          <Label type="default">
+            {t("reputation.points.title", {
+              name: REPUTATION_NAME[
+                getReputation({ game: gameState.context.state })
+              ],
+            })}
+          </Label>
+          <Label className="mr-1" type="warning">
+            {t("reputation.points.amount", { points })}
+          </Label>
+        </div>
+        <p className="text-xs mb-2">{t("reputation.points.description")}</p>
 
-      <NoticeboardItems
-        items={[
-          {
-            text: t("reputation.unlock.spring", { points: 50 }),
-            icon: REPUTATION_TASKS.SpringIsland({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.desert", { points: 50 }),
-            icon: REPUTATION_TASKS.DesertIsland({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.volcano", { points: 100 }),
-            icon: REPUTATION_TASKS.VolcanoIsland({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.discord", { points: 100 }),
-            icon: REPUTATION_TASKS.Discord({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.humanity", { points: 100 }),
-            icon: REPUTATION_TASKS.ProofOfHumanity({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.level", { points: 150 }),
-            icon: REPUTATION_TASKS.Level100({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.bud", { points: 300 }),
-            icon: REPUTATION_TASKS.Bud({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-          {
-            text: t("reputation.unlock.vip", { points: 600 }),
-            icon: REPUTATION_TASKS.VIP({
-              game: gameState.context.state,
-            })
-              ? SUNNYSIDE.icons.confirm
-              : SUNNYSIDE.icons.cancel,
-          },
-        ]}
-      />
+        <NoticeboardItems
+          items={[
+            {
+              text: t("reputation.unlock.spring", { points: 50 }),
+              icon: REPUTATION_TASKS.SpringIsland({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.desert", { points: 50 }),
+              icon: REPUTATION_TASKS.DesertIsland({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.volcano", { points: 100 }),
+              icon: REPUTATION_TASKS.VolcanoIsland({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.discord", { points: 100 }),
+              icon: REPUTATION_TASKS.Discord({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.humanity", { points: 100 }),
+              icon: REPUTATION_TASKS.ProofOfHumanity({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.level", { points: 150 }),
+              icon: REPUTATION_TASKS.Level100({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.bud", { points: 300 }),
+              icon: REPUTATION_TASKS.Bud({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
+              text: t("reputation.unlock.vip", { points: 600 }),
+              icon: REPUTATION_TASKS.VIP({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+          ]}
+        />
+      </div>
       {!hasVipAccess(gameState.context.state.inventory) && (
         <Button onClick={() => openModal("VIP_ITEMS")}>
           {t("reputation.vip.purchase")}
         </Button>
       )}
-    </div>
+    </>
   );
 };

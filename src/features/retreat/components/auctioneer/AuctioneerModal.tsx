@@ -16,9 +16,11 @@ import { NPC_WEARABLES } from "lib/npcs";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { VIPAccess } from "features/game/components/VipAccess";
 import { Loading } from "features/auth/components";
+import { hasReputation } from "features/game/lib/reputation";
+import { Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 interface Props {
   gameState: GameState;
@@ -64,6 +66,11 @@ export const AuctioneerModal: React.FC<Props> = ({
       auctionService.send("OPEN", { gameState });
     }
   }, [isOpen]);
+
+  const hasAuctionAccess = hasReputation({
+    game: gameState,
+    reputation: Reputation.Seedling,
+  });
 
   if (auctioneerState.matches("idle")) {
     return null;
@@ -114,15 +121,11 @@ export const AuctioneerModal: React.FC<Props> = ({
           }}
         >
           <div className="flex flex-col">
-            <div className="pt-2 pl-2">
-              <VIPAccess
-                isVIP={hasVipAccess(gameState.inventory)}
-                onUpgrade={() => {
-                  onClose();
-                  openModal("BUY_BANNER");
-                }}
-              />
-            </div>
+            {!hasAuctionAccess && (
+              <div className="pt-2 pl-2">
+                <RequiredReputation reputation={Reputation.Seedling} />
+              </div>
+            )}
             <AuctioneerContent
               auctionService={auctionService}
               gameState={gameState}

@@ -30,7 +30,7 @@ export const ModalContext = createContext<{
 }>({ openModal: console.log });
 
 export const ModalProvider: FC = ({ children }) => {
-  const [opened, setOpened] = useState<GlobalModal>("REPUTATION");
+  const [opened, setOpened] = useState<GlobalModal>();
   const [closeable, setCloseable] = useState(true);
 
   const openModal = (type: GlobalModal) => {

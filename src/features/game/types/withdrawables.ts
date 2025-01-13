@@ -4,7 +4,7 @@ import { BumpkinItem } from "./bumpkin";
 
 type Releases = {
   tradeAt: Date;
-  withdrawAt: Date;
+  withdrawAt?: Date;
 };
 
 // Items that are open for trade & withdraw
@@ -709,5 +709,17 @@ export const INVENTORY_RELEASES: Partial<Record<InventoryItemName, Releases>> =
     "Golden Cow": {
       tradeAt: new Date("2024-12-23"),
       withdrawAt: new Date("2025-01-01"),
+    },
+    "Goblin Emblem": {
+      tradeAt: new Date("2021-01-01"),
+    },
+    "Sunflorian Emblem": {
+      tradeAt: new Date("2021-01-01"),
+    },
+    "Bumpkin Emblem": {
+      tradeAt: new Date("2021-01-01"),
+    },
+    "Nightshade Emblem": {
+      tradeAt: new Date("2021-01-01"),
     },
   };

@@ -102,15 +102,15 @@ export const EmblemsTrading: React.FC<Props> = ({ onClose, emblem }) => {
         onClose={notCloseable ? undefined : onClose}
         tabs={[
           { icon: ITEM_DETAILS[emblem].image, name: t("faction.emblems") },
-          { icon: SUNNYSIDE.icons.search, name: t("buy") },
-          { icon: tradeIcon, name: t("sell") },
+          // { icon: SUNNYSIDE.icons.search, name: t("buy") },
+          // { icon: tradeIcon, name: t("sell") },
         ]}
         setCurrentTab={setTab}
         currentTab={tab}
       >
         {tab === 0 && <Emblems emblem={emblem} factionName={faction} />}
-        {tab === 1 && <BuyPanel emblem={emblem} setUpdatedAt={setUpdatedAt} />}
-        {tab === 2 && <Trade floorPrices={floorPrices} emblem={emblem} />}
+        {/* {tab === 1 && <BuyPanel emblem={emblem} setUpdatedAt={setUpdatedAt} />}
+        {tab === 2 && <Trade floorPrices={floorPrices} emblem={emblem} />} */}
       </CloseButtonPanel>
     </>
   );

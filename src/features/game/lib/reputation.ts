@@ -4,6 +4,7 @@ import { getBumpkinLevel } from "./level";
 import { hasVipAccess } from "./vipAccess";
 
 export enum Reputation {
+  Beginner = 0,
   Sprout = 1,
   Seedling = 2,
   Grower = 3,
@@ -12,6 +13,7 @@ export enum Reputation {
 }
 
 export const REPUTATION_NAME: Record<Reputation, string> = {
+  [Reputation.Beginner]: "Beginner",
   [Reputation.Sprout]: "Sprout",
   [Reputation.Seedling]: "Seedling",
   [Reputation.Grower]: "Grower",
@@ -20,17 +22,18 @@ export const REPUTATION_NAME: Record<Reputation, string> = {
 };
 
 export const REPUTATION_TIERS: Record<Reputation, number> = {
-  [Reputation.Sprout]: 0,
+  [Reputation.Beginner]: 0,
+  [Reputation.Sprout]: 100,
   [Reputation.Seedling]: 250,
   [Reputation.Grower]: 350,
   [Reputation.Cropkeeper]: 600,
-  [Reputation.GrandHarvester]: 800,
+  [Reputation.GrandHarvester]: 1000,
 };
 
 export const REPUTATION_POINTS = {
-  SpringIsland: 50,
+  SpringIsland: 100,
   DesertIsland: 50,
-  VolcanoIsland: 100,
+  VolcanoIsland: 50,
   Discord: 100,
   ProofOfHumanity: 100,
   Level100: 150,
@@ -90,4 +93,31 @@ export function hasReputation({
 }) {
   const playerReputation = getReputation({ game });
   return playerReputation >= reputation;
+}
+
+export function getRemainingTrades({ game }: { game: GameState }) {
+  const playerReputation = getReputation({ game });
+
+  // 3 Trades in Total
+  if (playerReputation <= Reputation.Sprout) {
+    return 0;
+  }
+
+  // 10 Trades in Total
+  if (playerReputation <= Reputation.Seedling) {
+    return 0;
+  }
+
+  // 3 Trades per day
+  if (playerReputation <= Reputation.Grower) {
+    return 0;
+  }
+
+  // 20 Trades in Total
+  if (playerReputation <= Reputation.Cropkeeper) {
+    return 0;
+  }
+
+  // Infinite Trades
+  return 0;
 }

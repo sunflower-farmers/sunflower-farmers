@@ -88,6 +88,10 @@ export const SUNNYSIDE = {
     magicBeanplanted: `${CONFIG.PROTECTED_IMAGE_URL}/crops/bean_planted.png`,
     magicBeanready: `${CONFIG.PROTECTED_IMAGE_URL}/crops/bean_ready.png`,
     magicBeangrowing: `${CONFIG.PROTECTED_IMAGE_URL}/crops/bean_growing.png`,
+    sprout: `${CONFIG.PROTECTED_IMAGE_URL}/crops/sprout.webp`,
+    seedling: `${CONFIG.PROTECTED_IMAGE_URL}/crops/seedling.webp`,
+    grower: `${CONFIG.PROTECTED_IMAGE_URL}/crops/grower.webp`,
+    cropKeeper: `${CONFIG.PROTECTED_IMAGE_URL}/crops/crop_keeper.webp`,
   },
   //Captcha
   captcha: {

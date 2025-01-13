@@ -7,8 +7,10 @@ import { getKeys } from "features/game/types/craftables";
 import token from "assets/icons/sfl.webp";
 import {
   FactionEmblem,
+  GameState,
   Inventory,
   InventoryItemName,
+  IslandType,
   TradeListing,
 } from "features/game/types/game";
 import { ITEM_DETAILS } from "features/game/types/images";
@@ -22,7 +24,6 @@ import { makeListingType } from "lib/utils/makeTradeListingType";
 import { Label } from "components/ui/Label";
 import { FloorPrices } from "features/game/actions/getListingsFloorPrices";
 import { formatNumber, setPrecision } from "lib/utils/formatNumber";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import { VIPAccess } from "features/game/components/VipAccess";
 import { NumberInput } from "components/ui/NumberInput";
@@ -32,7 +33,11 @@ import {
 } from "features/game/actions/tradeLimits";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { CannotTrade } from "../../CannotTrade";
-import { getRemainingListings } from "features/bumpkins/components/Trade";
+import { Reputation } from "features/game/lib/reputation";
+import { hasReputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
+import { getDayOfYear } from "lib/utils/time";
+import { hasVipAccess } from "features/game/lib/vipAccess";
 
 const MAX_SFL = 150;
 type Items = Partial<Record<InventoryItemName, number>>;
@@ -372,6 +377,51 @@ const TradeDetails: React.FC<{
   );
 };
 
+const ISLAND_LIMITS: Record<IslandType, number> = {
+  basic: 5,
+  spring: 10,
+  desert: 20,
+};
+
+export function getRemainingListings({ game }: { game: GameState }) {
+  let remaining = ISLAND_LIMITS[game.island?.type] ?? 0;
+
+  if (
+    !hasReputation({
+      game: game,
+      reputation: Reputation.Cropkeeper,
+    })
+  ) {
+    remaining = 1;
+  }
+
+  // Bonus trades based on level
+  const level = getBumpkinLevel(game.bumpkin?.experience ?? 0);
+
+  if (level >= 70) {
+    remaining += 10;
+  }
+
+  if (level >= 60) {
+    remaining += 10;
+  }
+
+  if (level >= 50) {
+    remaining += 10;
+  }
+
+  const dailyListings = game.trades.dailyListings ?? {
+    count: 0,
+    date: 0,
+  };
+
+  if (dailyListings.date === getDayOfYear(new Date())) {
+    remaining -= dailyListings.count;
+  }
+
+  return remaining;
+}
+
 export const Trade: React.FC<{
   floorPrices: FloorPrices;
   emblem: FactionEmblem;
@@ -383,11 +433,14 @@ export const Trade: React.FC<{
 
   const [showListing, setShowListing] = useState(false);
 
-  const isVIP = hasVipAccess(gameState.context.state.inventory);
+  const hasTradeReputation = hasReputation({
+    game: gameState.context.state,
+    reputation: Reputation.Seedling,
+  });
   const remainingListings = getRemainingListings({
     game: gameState.context.state,
   });
-  const hasListingsRemaining = isVIP || remainingListings > 0;
+  const hasListingsRemaining = hasTradeReputation || remainingListings > 0;
   // Show listings
   const trades = gameState.context.state.trades?.listings ?? {};
   const { t } = useAppTranslation();
@@ -446,11 +499,11 @@ export const Trade: React.FC<{
       <div className="relative">
         <div className="pl-2 pt-2 space-y-1 sm:space-y-0 sm:flex items-center justify-between ml-1.5">
           <VIPAccess
-            isVIP={isVIP}
+            isVIP={hasTradeReputation}
             onUpgrade={() => openModal("BUY_BANNER")}
             text={t("bumpkinTrade.unlockMoreTrades")}
           />
-          {!isVIP && (
+          {!hasTradeReputation && (
             <Label
               type={hasListingsRemaining ? "success" : "danger"}
               className="-ml-2"
@@ -488,12 +541,10 @@ export const Trade: React.FC<{
   return (
     <div>
       <div className="pl-2 pt-2 space-y-1 sm:space-y-0 sm:flex items-center justify-between ml-1.5">
-        <VIPAccess
-          isVIP={isVIP}
-          onUpgrade={() => openModal("BUY_BANNER")}
-          text={t("bumpkinTrade.unlockMoreTrades")}
-        />
-        {!isVIP && (
+        {!hasTradeReputation && (
+          <RequiredReputation reputation={Reputation.Seedling} />
+        )}
+        {!hasTradeReputation && (
           <Label
             type={hasListingsRemaining ? "success" : "danger"}
             className="-ml-2"

@@ -1,4 +1,4 @@
-import { InnerPanel } from "components/ui/Panel";
+import { ButtonPanel, InnerPanel } from "components/ui/Panel";
 import { ITEM_DETAILS } from "features/game/types/images";
 import React, { useContext, useEffect, useState } from "react";
 import budIcon from "assets/icons/bud.png";
@@ -9,6 +9,7 @@ import tradeIcon from "assets/icons/trade.png";
 import trade_point from "src/assets/icons/trade_points_coupon.webp";
 import sflIcon from "assets/icons/sfl.webp";
 import crownIcon from "assets/icons/vip.webp";
+
 import {
   Route,
   Routes,
@@ -37,11 +38,19 @@ import { useTranslation } from "react-i18next";
 import { Label } from "components/ui/Label";
 import { Button } from "components/ui/Button";
 import { MachineState } from "features/game/lib/gameMachine";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
+import {
+  hasReputation,
+  Reputation,
+  REPUTATION_NAME,
+} from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
-const _isVIP = (state: MachineState) =>
-  hasVipAccess(state.context.state.inventory);
+const _hasTradeReputation = (state: MachineState) =>
+  hasReputation({
+    game: state.context.state,
+    reputation: Reputation.Cropkeeper,
+  });
 
 export const MarketplaceNavigation: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -63,7 +72,7 @@ export const MarketplaceNavigation: React.FC = () => {
   const price = gameService.getSnapshot().context.prices.sfl?.usd ?? 0.0;
   const { farmId } = gameService.getSnapshot().context;
 
-  const isVIP = useSelector(gameService, _isVIP);
+  const hasTradeReputation = useSelector(gameService, _hasTradeReputation);
 
   return (
     <>
@@ -135,20 +144,19 @@ export const MarketplaceNavigation: React.FC = () => {
             onClick={() => setShowQuickswap(true)}
           />
 
-          {!isVIP && (
+          {!hasTradeReputation && (
             <InnerPanel
-              className="p-2 cursor-pointer"
-              onClick={() => {
-                openModal("VIP_ITEMS");
-              }}
+              className="cursor-pointer"
+              onClick={() => openModal("REPUTATION")}
             >
-              <div className="flex items-center justify-between mb-1">
-                <Label icon={crownIcon} type="danger" className="ml-1">
-                  {t("vipAccess")}
+              <div className="flex flex-col p-1">
+                <Label type="danger" icon={crownIcon}>
+                  3 Trades left
                 </Label>
-                <p className="text-xxs underline">{t("readMore")}</p>
+                <p className="text-xs">
+                  Increase your reputation to unlock more trades.
+                </p>
               </div>
-              <p className="text-xxs">{t("marketplace.wantToUnlock")}</p>
             </InnerPanel>
           )}
         </div>

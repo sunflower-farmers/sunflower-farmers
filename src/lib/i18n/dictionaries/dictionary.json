@@ -1288,7 +1288,7 @@
   "faction.emblems": "Emblems",
   "faction.emblems.intro.one": "Wow, look at all those emblems. You are a true warrior!",
   "faction.emblems.intro.two": "The more emblems you have, the higher your rank and more marks you can earn.",
-  "faction.tradeEmblems": "Trade emblems to climb the ranks and attain perks.",
+  "faction.tradeEmblems": "Trade emblems at the marketplace to climb the ranks and attain perks.",
   "faction.marksBoost": "Marks boost applies to faction activities coming July 8th.",
   "faction.shop.onlyFor": "{{faction}} only",
   "faction.shop.welcome": "Welcome to the Faction Shop! Use your marks to purchase temporary boosts, stylish wearables, and rare collectibles. Dive in and find your next great addition!",
@@ -4773,15 +4773,15 @@
   "tornado.specialEvent": "Special Event - Tornado",
   "searchHere": "Search here...",
   "reputation.title": "Reputation",
-  "reputation.description": "Increase your reputation to unlock new features!",
-  "reputation.sprout.description": "Limited resource trades, withdrawals & deliveries.",
+  "reputation.description": "Increase your reputation to unlock new Web3 features!",
+  "reputation.sprout.description": "1 Marketplace Trade per day",
 
   "reputation.points": "{{amount}} Points",
-  "reputation.points.title": "Reputation - Sprout",
+  "reputation.points.title": "Reputation - {{name}}",
   "reputation.points.amount": "{{points}} Reputation Points",
   "reputation.points.description": "Earn reputation points by completing tasks.",
 
-  "reputation.seedling.trades": "Increased Marketplace Trades & NFT Trading",
+  "reputation.seedling.trades": "3 Marketplace Trades per day",
   "reputation.seedling.deliveries": "1 SFL Delivery Per Day",
   "reputation.seedling.nft": "Withdraw NFTs",
 
@@ -4804,12 +4804,12 @@
   "reputation.grower.trades": "3 Trades per day",
 
   "reputation.cropkeeper": "Cropkeeper",
-  "reputation.cropkeeper.description": "Unlimmited SFL Deliveries",
+  "reputation.cropkeeper.description": "Unlimited SFL Deliveries",
   "reputation.cropkeeper.resources": "Withdraw Resources",
   "reputation.grandHarvester": "Grand Harvester",
-  "reputation.grandHarvester.description": "Withdraw NFTs",
+  "reputation.grandHarvester.description": "Dinner date with Tywin",
   "reputation.grandHarvester.resources": "Withdraw Resources",
   "reputation.cropkeeper.trades": "Unlimited Trades",
-  "reputation.cropkeeper.deliveries": "Unlimmited SFL Deliveries",
-  "reputation.grower.deliveries": "2 SFL Deliveries Per Day"
+  "reputation.cropkeeper.deliveries": "Unlimited SFL Deliveries",
+  "reputation.grower.auctions": "Auction Access"
 }
