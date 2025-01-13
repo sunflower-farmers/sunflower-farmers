@@ -23,6 +23,8 @@ import { Label } from "components/ui/Label";
 import { WalletAddressLabel } from "components/ui/WalletAddressLabel";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { MachineState } from "features/game/lib/gameMachine";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 interface Props {
   onWithdraw: (ids: number[], amounts: string[]) => void;
@@ -134,6 +136,15 @@ export const WithdrawItems: React.FC<Props> = ({
   const selectedItems = getKeys(selected)
     .filter((item) => selected[item]?.gt(0))
     .sort((a, b) => KNOWN_IDS[a] - KNOWN_IDS[b]);
+
+  const hasAccess = hasReputation({
+    game: state,
+    reputation: Reputation.Grower,
+  });
+
+  if (!hasAccess) {
+    return <RequiredReputation reputation={Reputation.Seedling} />;
+  }
 
   return (
     <>

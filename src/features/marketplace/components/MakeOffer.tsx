@@ -8,7 +8,6 @@ import { GameWallet } from "features/wallet/Wallet";
 import { CONFIG } from "lib/config";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
 import { config } from "features/wallet/WalletProvider";
-import { VIPAccess } from "features/game/components/VipAccess";
 
 import { TradeableDisplay } from "../lib/tradeables";
 import { Context } from "features/game/GameProvider";

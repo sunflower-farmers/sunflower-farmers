@@ -37,7 +37,6 @@ import { Reputation } from "features/game/lib/reputation";
 import { hasReputation } from "features/game/lib/reputation";
 import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 import { getDayOfYear } from "lib/utils/time";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 
 const MAX_SFL = 150;
 type Items = Partial<Record<InventoryItemName, number>>;

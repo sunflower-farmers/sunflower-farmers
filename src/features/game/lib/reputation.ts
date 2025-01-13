@@ -1,3 +1,4 @@
+import { getDayOfYear } from "lib/utils/time";
 import { getKeys } from "../types/decorations";
 import { GameState } from "../types/game";
 import { getBumpkinLevel } from "./level";
@@ -34,7 +35,7 @@ export const REPUTATION_POINTS = {
   SpringIsland: 100,
   DesertIsland: 50,
   VolcanoIsland: 50,
-  Discord: 100,
+  Discord: 50,
   ProofOfHumanity: 100,
   Level100: 150,
   Bud: 300,
@@ -96,28 +97,34 @@ export function hasReputation({
 }
 
 export function getRemainingTrades({ game }: { game: GameState }) {
+  const today = getDayOfYear(new Date());
+  const dailyListings = game.trades.dailyListings ?? {
+    date: 0,
+    count: 0,
+  };
+
+  const count = dailyListings.date === today ? dailyListings.count : 0;
+
   const playerReputation = getReputation({ game });
 
-  // 3 Trades in Total
-  if (playerReputation <= Reputation.Sprout) {
+  if (playerReputation == Reputation.Beginner) {
     return 0;
   }
 
-  // 10 Trades in Total
-  if (playerReputation <= Reputation.Seedling) {
-    return 0;
+  // 1 trade per day
+  if (playerReputation == Reputation.Sprout) {
+    return 1 - count;
+  }
+
+  // 2 trades per day
+  if (playerReputation == Reputation.Seedling) {
+    return 2 - count;
   }
 
   // 3 Trades per day
-  if (playerReputation <= Reputation.Grower) {
-    return 0;
+  if (playerReputation == Reputation.Grower) {
+    return 3 - count;
   }
 
-  // 20 Trades in Total
-  if (playerReputation <= Reputation.Cropkeeper) {
-    return 0;
-  }
-
-  // Infinite Trades
-  return 0;
+  return Infinity;
 }

@@ -194,15 +194,6 @@ export const Withdraw: React.FC<Props> = ({ onClose }) => {
     return <Transaction isBlocked onClose={onClose} />;
   }
 
-  if (!verified) {
-    return (
-      <>
-        <p className="p-1 m-1">{t("withdraw.proof")}</p>
-        <Button onClick={provePersonhood}>{t("withdraw.verification")}</Button>
-      </>
-    );
-  }
-
   return (
     <>
       {page === "main" && <MainMenu setPage={setPage} />}

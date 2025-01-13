@@ -6,13 +6,10 @@ import { Context } from "features/game/GameProvider";
 import { Context as AuthContext } from "features/auth/lib/Provider";
 import { useActor } from "@xstate/react";
 
-import tradeIcon from "assets/icons/trade.png";
 import {
   FloorPrices,
   getListingsFloorPrices,
 } from "features/game/actions/getListingsFloorPrices";
-import { BuyPanel } from "./BuyPanel";
-import { Trade } from "./Trade";
 import { FactionEmblem, FactionName } from "features/game/types/game";
 import { ITEM_DETAILS } from "features/game/types/images";
 import { Emblems } from "./Emblems";

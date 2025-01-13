@@ -16,7 +16,6 @@ import { NPC_WEARABLES } from "lib/npcs";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
-import { VIPAccess } from "features/game/components/VipAccess";
 import { Loading } from "features/auth/components";
 import { hasReputation } from "features/game/lib/reputation";
 import { Reputation } from "features/game/lib/reputation";

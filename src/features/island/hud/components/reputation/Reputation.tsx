@@ -12,6 +12,7 @@ import {
   getReputationPoints,
   Reputation,
   REPUTATION_NAME,
+  REPUTATION_POINTS,
   REPUTATION_TASKS,
   REPUTATION_TIERS,
 } from "features/game/lib/reputation";
@@ -25,7 +26,6 @@ import sflIcon from "assets/icons/sfl.webp";
 import walletIcon from "assets/icons/wallet.png";
 import hammerinHarry from "assets/npcs/hammerin_harry.webp";
 import salesIcon from "assets/icons/sale.webp";
-import { TranslationKeys } from "lib/i18n/dictionaries/types";
 
 export const MyReputation: React.FC = () => {
   const { openModal } = useContext(ModalContext);
@@ -55,7 +55,7 @@ export const RequiredReputation: React.FC<{
     <ButtonPanel onClick={() => openModal("REPUTATION")}>
       <div className="flex flex-col">
         <Label type="danger" icon={lockIcon}>
-          {`${REPUTATION_NAME[reputation]}`}
+          {`You are not a ${REPUTATION_NAME[reputation]}`}
         </Label>
         <p className="text-xs">{text ?? t("reputation.description")}</p>
       </div>
@@ -114,7 +114,7 @@ export const ReputationTiers: React.FC = () => {
         items={[
           {
             text: t("reputation.sprout.description"),
-            icon: lockIcon,
+            icon: tradeIcon,
           },
         ]}
       />
@@ -135,10 +135,7 @@ export const ReputationTiers: React.FC = () => {
             text: t("reputation.seedling.trades"),
             icon: tradeIcon,
           },
-          {
-            text: t("reputation.seedling.deliveries"),
-            icon: sflIcon,
-          },
+
           {
             text: t("reputation.seedling.nft"),
             icon: ITEM_DETAILS["Grinx's Hammer"].image,
@@ -159,20 +156,17 @@ export const ReputationTiers: React.FC = () => {
       <NoticeboardItems
         items={[
           {
+            text: t("reputation.grower.trades"),
+            icon: tradeIcon,
+          },
+          {
             text: t("reputation.grower.description"),
             icon: walletIcon,
           },
-          {
-            text: t("reputation.grower.trades"),
-            icon: SUNNYSIDE.icons.player,
-          },
+
           {
             text: t("reputation.grower.auctions"),
             icon: hammerinHarry,
-          },
-          {
-            text: t("reputation.grower.sfl"),
-            icon: sflIcon,
           },
         ]}
       />
@@ -260,7 +254,9 @@ export const ReputationPoints: React.FC = () => {
         <NoticeboardItems
           items={[
             {
-              text: t("reputation.unlock.spring", { points: 50 }),
+              text: t("reputation.unlock.spring", {
+                points: REPUTATION_POINTS.SpringIsland,
+              }),
               icon: REPUTATION_TASKS.SpringIsland({
                 game: gameState.context.state,
               })
@@ -268,7 +264,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.desert", { points: 50 }),
+              text: t("reputation.unlock.desert", {
+                points: REPUTATION_POINTS.DesertIsland,
+              }),
               icon: REPUTATION_TASKS.DesertIsland({
                 game: gameState.context.state,
               })
@@ -276,7 +274,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.volcano", { points: 100 }),
+              text: t("reputation.unlock.volcano", {
+                points: REPUTATION_POINTS.VolcanoIsland,
+              }),
               icon: REPUTATION_TASKS.VolcanoIsland({
                 game: gameState.context.state,
               })
@@ -284,7 +284,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.discord", { points: 100 }),
+              text: t("reputation.unlock.discord", {
+                points: REPUTATION_POINTS.Discord,
+              }),
               icon: REPUTATION_TASKS.Discord({
                 game: gameState.context.state,
               })
@@ -292,7 +294,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.humanity", { points: 100 }),
+              text: t("reputation.unlock.humanity", {
+                points: REPUTATION_POINTS.ProofOfHumanity,
+              }),
               icon: REPUTATION_TASKS.ProofOfHumanity({
                 game: gameState.context.state,
               })
@@ -300,7 +304,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.level", { points: 150 }),
+              text: t("reputation.unlock.level", {
+                points: REPUTATION_POINTS.Level100,
+              }),
               icon: REPUTATION_TASKS.Level100({
                 game: gameState.context.state,
               })
@@ -308,7 +314,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.bud", { points: 300 }),
+              text: t("reputation.unlock.bud", {
+                points: REPUTATION_POINTS.Bud,
+              }),
               icon: REPUTATION_TASKS.Bud({
                 game: gameState.context.state,
               })
@@ -316,7 +324,9 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
-              text: t("reputation.unlock.vip", { points: 600 }),
+              text: t("reputation.unlock.vip", {
+                points: REPUTATION_POINTS.VIP,
+              }),
               icon: REPUTATION_TASKS.VIP({
                 game: gameState.context.state,
               })

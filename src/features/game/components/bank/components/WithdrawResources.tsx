@@ -24,6 +24,8 @@ import { Label } from "components/ui/Label";
 import { WalletAddressLabel } from "components/ui/WalletAddressLabel";
 import { OuterPanel } from "components/ui/Panel";
 import { SquareIcon } from "components/ui/SquareIcon";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 interface Props {
   onWithdraw: () => void;
@@ -109,6 +111,15 @@ export const WithdrawResources: React.FC<Props> = ({ onWithdraw }) => {
       return copy;
     });
   };
+
+  const hasAccess = hasReputation({
+    game: state,
+    reputation: Reputation.Grower,
+  });
+
+  if (!hasAccess) {
+    return <RequiredReputation reputation={Reputation.Cropkeeper} />;
+  }
 
   return (
     <>

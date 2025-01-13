@@ -1,4 +1,4 @@
-import { ButtonPanel, InnerPanel } from "components/ui/Panel";
+import { InnerPanel } from "components/ui/Panel";
 import { ITEM_DETAILS } from "features/game/types/images";
 import React, { useContext, useEffect, useState } from "react";
 import budIcon from "assets/icons/bud.png";
@@ -40,11 +40,10 @@ import { Button } from "components/ui/Button";
 import { MachineState } from "features/game/lib/gameMachine";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import {
+  getRemainingTrades,
   hasReputation,
   Reputation,
-  REPUTATION_NAME,
 } from "features/game/lib/reputation";
-import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 const _hasTradeReputation = (state: MachineState) =>
   hasReputation({
@@ -151,11 +150,9 @@ export const MarketplaceNavigation: React.FC = () => {
             >
               <div className="flex flex-col p-1">
                 <Label type="danger" icon={crownIcon}>
-                  3 Trades left
+                  {`${getRemainingTrades({ game: gameService.getSnapshot().context.state })} Trades left`}
                 </Label>
-                <p className="text-xs">
-                  Increase your reputation to unlock more trades.
-                </p>
+                <p className="text-xs">{t("reputation.marketplace.trades")}</p>
               </div>
             </InnerPanel>
           )}

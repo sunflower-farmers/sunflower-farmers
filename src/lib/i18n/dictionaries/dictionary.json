@@ -4781,11 +4781,11 @@
   "reputation.points.amount": "{{points}} Reputation Points",
   "reputation.points.description": "Earn reputation points by completing tasks.",
 
-  "reputation.seedling.trades": "3 Marketplace Trades per day",
+  "reputation.seedling.trades": "2 Marketplace Trades per day",
   "reputation.seedling.deliveries": "1 SFL Delivery Per Day",
   "reputation.seedling.nft": "Withdraw NFTs",
 
-  "reputation.unlock.spring": "Unlock Spring Island - {{points}} points",
+  "reputation.unlock.spring": "Reach Spring Island - {{points}} points",
   "reputation.unlock.desert": "Reach Desert Island - {{points}} points",
   "reputation.unlock.volcano": "Reach Volcano Island - {{points}} points",
   "reputation.unlock.discord": "Connect Discord Account - {{points}} points",
@@ -4801,7 +4801,7 @@
   "reputation.grower": "Grower",
   "reputation.grower.description": "Withdraw SFL",
   "reputation.grower.sfl": "2 SFL Deliveries Per Day",
-  "reputation.grower.trades": "3 Trades per day",
+  "reputation.grower.trades": "3 Marketplace Trades per day",
 
   "reputation.cropkeeper": "Cropkeeper",
   "reputation.cropkeeper.description": "Unlimited SFL Deliveries",
@@ -4810,6 +4810,7 @@
   "reputation.grandHarvester.description": "Dinner date with Tywin",
   "reputation.grandHarvester.resources": "Withdraw Resources",
   "reputation.cropkeeper.trades": "Unlimited Trades",
-  "reputation.cropkeeper.deliveries": "Unlimited SFL Deliveries",
-  "reputation.grower.auctions": "Auction Access"
+  "reputation.cropkeeper.deliveries": "Unlock All SFL Deliveries",
+  "reputation.grower.auctions": "Auction Access",
+  "reputation.marketplace.trades": "Increase your reputation to unlock more trades."
 }
