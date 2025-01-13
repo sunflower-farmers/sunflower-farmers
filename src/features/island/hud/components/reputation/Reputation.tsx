@@ -264,6 +264,16 @@ export const ReputationPoints: React.FC = () => {
                 : SUNNYSIDE.icons.cancel,
             },
             {
+              text: t("reputation.unlock.level15", {
+                points: REPUTATION_POINTS.Level15,
+              }),
+              icon: REPUTATION_TASKS.Level15({
+                game: gameState.context.state,
+              })
+                ? SUNNYSIDE.icons.confirm
+                : SUNNYSIDE.icons.cancel,
+            },
+            {
               text: t("reputation.unlock.desert", {
                 points: REPUTATION_POINTS.DesertIsland,
               }),

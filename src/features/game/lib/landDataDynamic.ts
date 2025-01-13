@@ -4,10 +4,10 @@ import { LEVEL_EXPERIENCE } from "./level";
 import { BumpkinLevel } from "features/game/lib/level";
 import { INITIAL_BUMPKIN_LEVEL, INITIAL_EXPANSIONS } from "./bumpkinData";
 import { getEnabledNodeCount } from "../expansion/lib/expansionNodes";
-import { INITIAL_RESOURCES } from "./landDataStatic";
 import { TEST_BUMPKIN } from "./bumpkinData";
 import { STATIC_OFFLINE_FARM } from "./landDataStatic";
 import { getBuildingBumpkinLevelRequired } from "../expansion/lib/buildingRequirements";
+import { INITIAL_RESOURCES } from "./constants";
 
 function getInitialNodes(name: string) {
   let count = getEnabledNodeCount(INITIAL_BUMPKIN_LEVEL as BumpkinLevel, name);

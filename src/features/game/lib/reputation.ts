@@ -33,6 +33,7 @@ export const REPUTATION_TIERS: Record<Reputation, number> = {
 
 export const REPUTATION_POINTS = {
   SpringIsland: 100,
+  Level15: 50,
   DesertIsland: 50,
   VolcanoIsland: 50,
   Discord: 50,
@@ -54,8 +55,9 @@ export const REPUTATION_TASKS: Record<
     game.island.type !== "spring" &&
     game.island.type !== "desert",
   Discord: ({ game }) => !!game.wardrobe["Companion Cap"],
-  ProofOfHumanity: ({ game }) => false, // TODO
+  ProofOfHumanity: ({ game }) => !!game.verified, // TODO
   Level100: ({ game }) => getBumpkinLevel(game.bumpkin.experience) >= 100,
+  Level15: ({ game }) => getBumpkinLevel(game.bumpkin.experience) >= 15,
   Bud: ({ game }) => getKeys(game.buds ?? {}).length > 0,
   VIP: ({ game }) => hasVipAccess(game.inventory),
 };

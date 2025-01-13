@@ -4791,6 +4791,7 @@
   "reputation.unlock.discord": "Connect Discord Account - {{points}} points",
   "reputation.unlock.humanity": "Complete Proof of Humanity - {{points}} points",
   "reputation.unlock.level": "Reach lvl 100 - {{points}} points",
+  "reputation.unlock.level15": "Reach lvl 15 - {{points}} points",
   "reputation.unlock.bud": "Own a bud - {{points}} points",
   "reputation.unlock.vip": "VIP Access - {{points}} points",
 
@@ -4804,7 +4805,7 @@
   "reputation.grower.trades": "3 Marketplace Trades per day",
 
   "reputation.cropkeeper": "Cropkeeper",
-  "reputation.cropkeeper.description": "Unlimited SFL Deliveries",
+  "reputation.cropkeeper.description": "Unlock all SFL Deliveries",
   "reputation.cropkeeper.resources": "Withdraw Resources",
   "reputation.grandHarvester": "Grand Harvester",
   "reputation.grandHarvester.description": "Dinner date with Tywin",
@@ -4812,5 +4813,7 @@
   "reputation.cropkeeper.trades": "Unlimited Trades",
   "reputation.cropkeeper.deliveries": "Unlock All SFL Deliveries",
   "reputation.grower.auctions": "Auction Access",
-  "reputation.marketplace.trades": "Increase your reputation to unlock more trades."
+  "reputation.marketplace.trades": "Increase your reputation to unlock more trades.",
+  "verify.verified": "You are verified!",
+  "verify.verify": "Verify your account to increase your reputation."
 }

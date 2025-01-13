@@ -30,6 +30,8 @@ const getPageIcon = (page: Page) => {
       return SUNNYSIDE.icons.plant;
     case "resources":
       return SUNNYSIDE.resource.wood;
+    case "verify":
+      return SUNNYSIDE.icons.search;
     default:
       return "";
   }
@@ -47,12 +49,21 @@ const getPageText = (page: Page) => {
       return translate("buds");
     case "resources":
       return translate("resources");
+    case "verify":
+      return translate("verify");
     default:
       return "";
   }
 };
 
-type Page = "main" | "tokens" | "items" | "wearables" | "buds" | "resources";
+type Page =
+  | "main"
+  | "tokens"
+  | "items"
+  | "wearables"
+  | "buds"
+  | "resources"
+  | "verify";
 
 const MainMenu: React.FC<{ setPage: (page: Page) => void }> = ({ setPage }) => {
   return (
@@ -91,6 +102,12 @@ const MainMenu: React.FC<{ setPage: (page: Page) => void }> = ({ setPage }) => {
           <div className="flex items-center">
             <img src={getPageIcon("buds")} className="h-4 mr-1" />
             {getPageText("buds")}
+          </div>
+        </Button>
+        <Button onClick={() => setPage("verify")}>
+          <div className="flex items-center">
+            <img src={getPageIcon("verify")} className="h-4 mr-1" />
+            {getPageText("verify")}
           </div>
         </Button>
       </div>
@@ -205,6 +222,31 @@ export const Withdraw: React.FC<Props> = ({ onClose }) => {
         <WithdrawWearables onWithdraw={onWithdrawWearables} />
       )}
       {page === "buds" && <WithdrawBuds onWithdraw={onWithdrawBuds} />}
+      {page === "verify" && <Verify onClose={onClose} />}
     </>
+  );
+};
+
+export const Verify: React.FC<Props> = ({ onClose }) => {
+  const { gameService } = useContext(Context);
+  const { t } = useAppTranslation();
+  const verified = useSelector(gameService, _verified);
+
+  if (verified) {
+    return <p className="text-sm">{t("verify.verified")}</p>;
+  }
+
+  return (
+    <div>
+      <p className="text-sm">{t("verify.verify")}</p>
+      <Button
+        onClick={() => {
+          gameService.send("PROVE_PERSONHOOD");
+          onClose();
+        }}
+      >
+        {t("verify")}
+      </Button>
+    </div>
   );
 };
