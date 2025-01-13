@@ -112,7 +112,7 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
         className={classNames(`grid absolute -left-4 z-40 top-0`, {
           "cursor-pointer hover:img-highlight": !!onClick,
         })}
-        style={{ height: "80px" }}
+        style={{ height: "70px" }}
         onClick={onClick}
       >
         <img
@@ -156,7 +156,7 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
           image={SUNNYSIDE.ui.progressBarSprite}
           widthFrame={DIMENSIONS.original}
           heightFrame={DIMENSIONS.original}
-          zoomScale={new SpringValue(1)}
+          zoomScale={new SpringValue(0.7)}
           fps={10}
           steps={SPRITE_STEPS}
           autoplay={false}
@@ -166,6 +166,7 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
           }}
         />
         <div
+          id="progress-bar"
           className={`col-start-1 row-start-1 flex justify-center   z-20 text-xs`}
           style={{
             width: `${DIMENSIONS.level.width}px`,
@@ -268,14 +269,16 @@ export const BumpkinProfile: React.FC<{
       </Modal>
 
       {/* Bumpkin profile */}
-      <BumpkinAvatar
-        bumpkin={state.bumpkin}
-        username={username}
-        onClick={handleShowHomeModal}
-        showSkillPointAlert={
-          showSkillPointAlert && !gameState.matches("visiting")
-        }
-      />
+      <div className="scale-[0.7] absolute left-0 top-0">
+        <BumpkinAvatar
+          bumpkin={state.bumpkin}
+          username={username}
+          onClick={handleShowHomeModal}
+          showSkillPointAlert={
+            showSkillPointAlert && !gameState.matches("visiting")
+          }
+        />
+      </div>
     </>
   );
 };

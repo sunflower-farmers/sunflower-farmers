@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 import React, { useContext, useState } from "react";
 import { Balances } from "components/Balances";
 import { useActor, useSelector } from "@xstate/react";
@@ -30,6 +31,7 @@ import {
   BumpkinRevampSkillName,
   getPowerSkills,
 } from "features/game/types/bumpkinSkills";
+import { GameCalendar } from "features/game/components/GameCalendar";
 
 const _farmAddress = (state: MachineState) => state.context.farmAddress;
 
@@ -196,6 +198,7 @@ const HudComponent: React.FC<{
           <Settings isFarming={isFarming} />
         </div>
         <BumpkinProfile isFullUser={isFullUser} />
+        <GameCalendar />
 
         <DepositModal
           farmAddress={farmAddress ?? ""}

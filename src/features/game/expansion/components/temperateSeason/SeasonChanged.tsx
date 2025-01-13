@@ -25,7 +25,7 @@ import { IngredientsPopover } from "components/ui/IngredientsPopover";
 import { ModalOverlay } from "components/ui/ModalOverlay";
 import { getRelativeTime } from "lib/utils/time";
 
-const SEASON_DETAILS: Record<
+export const SEASON_DETAILS: Record<
   TemperateSeasonName,
   {
     icon: string;
