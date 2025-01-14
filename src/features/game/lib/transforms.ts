@@ -25,6 +25,7 @@ export function makeGame(farm: any): GameState {
     calendar: farm.calendar,
     previousWardrobe: farm.previousWardrobe,
     competitions: farm.competitions,
+    verified: farm.verified,
     stock: Object.keys(farm.stock).reduce(
       (items, item) => ({
         ...items,

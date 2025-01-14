@@ -19,6 +19,8 @@ import { PIXEL_SCALE } from "features/game/lib/constants";
 import { MachineState } from "features/game/lib/gameMachine";
 import { NumberInput } from "components/ui/NumberInput";
 import { Label } from "components/ui/Label";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 interface Props {
   onWithdraw: (sfl: string) => void;
@@ -55,6 +57,15 @@ export const WithdrawTokens: React.FC<Props> = ({ onWithdraw }) => {
       setAmount(new Decimal(0));
     }
   };
+
+  const hasAccess = hasReputation({
+    game: state,
+    reputation: Reputation.Grower,
+  });
+
+  if (!hasAccess) {
+    return <RequiredReputation reputation={Reputation.Grower} />;
+  }
 
   const disableWithdraw = amount.greaterThan(balance) || amount.lessThan(0);
 

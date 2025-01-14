@@ -8,7 +8,6 @@ import { GameWallet } from "features/wallet/Wallet";
 import { CONFIG } from "lib/config";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
 import { config } from "features/wallet/WalletProvider";
-import { VIPAccess } from "features/game/components/VipAccess";
 
 import { TradeableDisplay } from "../lib/tradeables";
 import { Context } from "features/game/GameProvider";
@@ -26,15 +25,19 @@ import { getKeys } from "features/game/types/craftables";
 import { KNOWN_ITEMS } from "features/game/types";
 import Decimal from "decimal.js-light";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { calculateTradePoints } from "features/game/events/landExpansion/addTradePoints";
 import { StoreOnChain } from "./StoreOnChain";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 const _balance = (state: MachineState) => state.context.state.balance;
 const _previousBalance = (state: MachineState) =>
   state.context.state.previousBalance;
-const _isVIP = (state: MachineState) =>
-  hasVipAccess(state.context.state.inventory);
+const _hasReputation = (state: MachineState) =>
+  hasReputation({
+    game: state.context.state,
+    reputation: Reputation.Cropkeeper,
+  });
 const _usd = (state: MachineState) => state.context.prices.sfl?.usd ?? 0.0;
 
 export const MakeOffer: React.FC<{
@@ -49,7 +52,7 @@ export const MakeOffer: React.FC<{
 
   const balance = useSelector(gameService, _balance);
   const previousBalance = useSelector(gameService, _previousBalance);
-  const isVIP = useSelector(gameService, _isVIP);
+  const hasTradeReputation = useSelector(gameService, _hasReputation);
   const usd = useSelector(gameService, _usd);
 
   const { openModal } = useContext(ModalContext);
@@ -234,15 +237,8 @@ export const MakeOffer: React.FC<{
           <Label type="default" className="-ml-1 mb-1">
             {t("marketplace.makeOffer")}
           </Label>
-          {!isVIP && (
-            <VIPAccess
-              isVIP={isVIP}
-              onUpgrade={() => {
-                openModal("BUY_BANNER");
-              }}
-              // text={t("marketplace.unlockSelling")}
-              labelType={!isVIP ? "danger" : undefined}
-            />
+          {!hasTradeReputation && (
+            <RequiredReputation reputation={Reputation.Cropkeeper} />
           )}
 
           {tradeType === "onchain" && (
@@ -276,7 +272,7 @@ export const MakeOffer: React.FC<{
           {t("cancel")}
         </Button>
         <Button
-          disabled={!offer || balance.lt(offer) || !isVIP}
+          disabled={!offer || balance.lt(offer) || !hasTradeReputation}
           onClick={submitOffer}
           className="relative"
         >

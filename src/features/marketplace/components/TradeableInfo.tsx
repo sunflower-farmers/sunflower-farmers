@@ -161,7 +161,7 @@ export const TradeableDescription: React.FC<{
             </Label>
           </div>
         )}
-        {tradeable && !tradeable?.isActive && !tradeAt && (
+        {tradeable && (!tradeable?.isActive || !tradeAt) && (
           <div className="p-2 pl-0 pb-0">
             <Label type="danger">{t("marketplace.notForSale")}</Label>
           </div>

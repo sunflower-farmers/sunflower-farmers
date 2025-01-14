@@ -22,6 +22,8 @@ import { Label } from "components/ui/Label";
 import { WalletAddressLabel } from "components/ui/WalletAddressLabel";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { canWithdrawBoostedWearable } from "features/game/types/wearableValidation";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 export const isCurrentObsession = (itemName: BumpkinItem, game: GameState) => {
   const obsessionCompletedAt = game.npcs?.bert?.questCompletedAt;
@@ -110,6 +112,15 @@ export const WithdrawWearables: React.FC<Props> = ({ onWithdraw }) => {
   const selectedItems = getKeys(selected)
     .filter((item) => !!selected[item])
     .sort((a, b) => ITEM_IDS[a] - ITEM_IDS[b]);
+
+  const hasAccess = hasReputation({
+    game: state,
+    reputation: Reputation.Seedling,
+  });
+
+  if (!hasAccess) {
+    return <RequiredReputation reputation={Reputation.Seedling} />;
+  }
 
   return (
     <>

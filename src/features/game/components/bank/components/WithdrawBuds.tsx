@@ -16,6 +16,8 @@ import { MachineState } from "features/game/lib/gameMachine";
 import { Label } from "components/ui/Label";
 import { WalletAddressLabel } from "components/ui/WalletAddressLabel";
 import { PIXEL_SCALE } from "features/game/lib/constants";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 const imageDomain = CONFIG.NETWORK === "mainnet" ? "buds" : "testnet-buds";
 
@@ -47,6 +49,15 @@ export const WithdrawBuds: React.FC<Props> = ({ onWithdraw }) => {
     setUnselected((prev) => [...prev, budId]);
     setSelected((prev) => prev.filter((bud) => bud !== budId));
   };
+
+  const hasAccess = hasReputation({
+    game: state,
+    reputation: Reputation.Seedling,
+  });
+
+  if (!hasAccess) {
+    return <RequiredReputation reputation={Reputation.Seedling} />;
+  }
 
   return (
     <>

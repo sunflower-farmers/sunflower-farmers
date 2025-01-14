@@ -23,10 +23,10 @@ import { formatNumber } from "lib/utils/formatNumber";
 import { Box } from "components/ui/Box";
 import { MAX_SESSION_SFL } from "features/game/lib/processEvent";
 
-import { hasVipAccess } from "features/game/lib/vipAccess";
-import { VIPAccess } from "features/game/components/VipAccess";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
 import { ListingCategoryCard } from "components/ui/ListingCategoryCard";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
+import { RequiredReputation } from "features/island/hud/components/reputation/Reputation";
 
 export const MARKET_BUNDLES: Record<TradeableName, number> = {
   // Crops
@@ -151,7 +151,10 @@ export const SalesPanel: React.FC<{
     return progress.gt(MAX_SESSION_SFL);
   };
 
-  const hasVIP = hasVipAccess(state.inventory);
+  const hasExchangeReputation = hasReputation({
+    game: state,
+    reputation: Reputation.Cropkeeper,
+  });
 
   const unitPrice = marketPrices?.prices?.currentPrices?.[selected] ?? 0;
   const bundlePrice = MARKET_BUNDLES[selected] * unitPrice;
@@ -273,20 +276,21 @@ export const SalesPanel: React.FC<{
         <div className="relative w-full">
           <div className="p-2">
             <div className="flex flex-col justify-between space-y-1 sm:flex-row sm:space-y-0">
-              {hasVIP && (
+              {hasExchangeReputation && (
                 <Label type="default" icon={SUNNYSIDE.icons.basket}>
                   {t("goblinTrade.select")}
                 </Label>
               )}
-              <VIPAccess
-                isVIP={hasVIP}
-                onUpgrade={() => openModal("BUY_BANNER")}
-              />
+              {!hasExchangeReputation && (
+                <div className="pt-2 pl-2">
+                  <RequiredReputation reputation={Reputation.Cropkeeper} />
+                </div>
+              )}
               {marketPrices && (
                 <div
                   className={classNames(
                     "flex items-center justify-start sm:justify-end w-64",
-                    { "opacity-75": !hasVIP },
+                    { "opacity-75": !hasExchangeReputation },
                   )}
                 >
                   <LastUpdated cachedAt={marketPrices.cachedAt ?? 0} />
@@ -309,12 +313,12 @@ export const SalesPanel: React.FC<{
                     <ListingCategoryCard
                       itemName={name}
                       pricePerUnit={marketPrices?.prices?.currentPrices?.[name]}
-                      disabled={!hasPrices || !hasVIP}
+                      disabled={!hasPrices || !hasExchangeReputation}
                       marketBundle={MARKET_BUNDLES[name]}
                       showPulse={showPulse}
                       priceMovement={priceMovement}
                       onClick={() => {
-                        if (!hasPrices || !hasVIP) return;
+                        if (!hasPrices || !hasExchangeReputation) return;
                         onSell(name, marketPrices.prices.currentPrices[name]);
                       }}
                     />

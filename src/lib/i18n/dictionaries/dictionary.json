@@ -4807,5 +4807,49 @@
   "tornado.destroyed.two": "Some of your crops were destroyed.",
   "tornado.destroyed.three": "Some of your buildings were damaged.",
   "tornado.specialEvent": "Special Event - Tornado",
-  "searchHere": "Search here..."
+  "searchHere": "Search here...",
+  "reputation.title": "Reputation",
+  "reputation.description": "Increase your reputation to unlock more Web3 features!",
+  "reputation.sprout.description": "1 Marketplace Trade per day",
+
+  "reputation.points": "{{amount}} Points",
+  "reputation.points.title": "Reputation - {{name}}",
+  "reputation.points.amount": "{{points}} Reputation Points",
+  "reputation.points.description": "Earn reputation points by completing tasks.",
+
+  "reputation.seedling.trades": "2 Marketplace Trades per day",
+  "reputation.seedling.deliveries": "1 SFL Delivery Per Day",
+  "reputation.seedling.nft": "Withdraw NFTs",
+
+  "reputation.unlock.spring": "Reach Spring Island - {{points}} points",
+  "reputation.unlock.desert": "Reach Desert Island - {{points}} points",
+  "reputation.unlock.volcano": "Reach Volcano Island - {{points}} points",
+  "reputation.unlock.discord": "Connect Discord Account - {{points}} points",
+  "reputation.unlock.humanity": "Complete Proof of Humanity - {{points}} points",
+  "reputation.unlock.level": "Reach lvl 100 - {{points}} points",
+  "reputation.unlock.level15": "Reach lvl 15 - {{points}} points",
+  "reputation.unlock.bud": "Own a bud - {{points}} points",
+  "reputation.unlock.vip": "VIP Access - {{points}} points",
+
+  "reputation.vip.purchase": "Purchase VIP Pass",
+  "reputation.sprout": "Sprout",
+  "reputation.seedling": "Seedling",
+
+  "reputation.grower": "Grower",
+  "reputation.grower.description": "Withdraw SFL",
+  "reputation.grower.sfl": "2 SFL Deliveries Per Day",
+  "reputation.grower.trades": "3 Marketplace Trades per day",
+
+  "reputation.cropkeeper": "Cropkeeper",
+  "reputation.cropkeeper.description": "Unlock all SFL Deliveries",
+  "reputation.cropkeeper.resources": "Withdraw Resources",
+  "reputation.grandHarvester": "Grand Harvester",
+  "reputation.grandHarvester.description": "Dinner date with Tywin",
+  "reputation.grandHarvester.resources": "Withdraw Resources",
+  "reputation.cropkeeper.trades": "Unlimited Trades",
+  "reputation.cropkeeper.deliveries": "Unlock All SFL Deliveries",
+  "reputation.grower.auctions": "Auction Access",
+  "reputation.marketplace.trades": "Increase your reputation to unlock more trades.",
+  "verify.verified": "You are verified!",
+  "verify.verify": "Verify your account to increase your reputation."
 }

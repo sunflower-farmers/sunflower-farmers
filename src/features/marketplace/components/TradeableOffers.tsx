@@ -33,7 +33,6 @@ import { getBasketItems } from "features/island/hud/components/inventory/utils/i
 import { KNOWN_ITEMS } from "features/game/types";
 import { TRADE_LIMITS } from "features/game/actions/tradeLimits";
 
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import Decimal from "decimal.js-light";
 import { useParams } from "react-router";
 import { KeyedMutator } from "swr";
@@ -46,8 +45,6 @@ const _authToken = (state: AuthMachineState) =>
   state.context.user.rawToken as string;
 const _balance = (state: MachineState) => state.context.state.balance;
 const _inventory = (state: MachineState) => state.context.state.inventory;
-const _isVIP = (state: MachineState) =>
-  hasVipAccess(state.context.state.inventory);
 const _bertObsession = (state: MachineState) =>
   state.context.state.bertObsession;
 const _npcs = (state: MachineState) => state.context.state.npcs;

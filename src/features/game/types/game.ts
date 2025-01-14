@@ -1310,6 +1310,8 @@ export interface GameState {
     restockedAt?: number;
   };
 
+  verified?: boolean;
+
   gems: {
     history?: Record<string, { spent: number }>;
   };

@@ -13,7 +13,6 @@ import { Context as AuthContext } from "features/auth/lib/Provider";
 import { makeListingType } from "lib/utils/makeTradeListingType";
 import { Label } from "components/ui/Label";
 import { ModalContext } from "features/game/components/modal/ModalProvider";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import { VIPAccess } from "features/game/components/VipAccess";
 import { getDayOfYear } from "lib/utils/time";
 import { SUNNYSIDE } from "assets/sunnyside";
@@ -30,6 +29,7 @@ import token from "assets/icons/sfl.webp";
 import { PIXEL_SCALE } from "features/game/lib/constants";
 import { SquareIcon } from "components/ui/SquareIcon";
 import { isMobile } from "mobile-device-detect";
+import { hasReputation, Reputation } from "features/game/lib/reputation";
 
 const MAX_NON_VIP_PURCHASES = 3;
 
@@ -57,20 +57,24 @@ export const BuyPanel: React.FC<{
     },
   ] = useActor(gameService);
 
-  const isVIP = hasVipAccess(state.inventory);
+  const hasTradeReputation = hasReputation({
+    game: state,
+    reputation: Reputation.Seedling,
+  });
   const dailyPurchases = state.trades.dailyPurchases ?? { count: 0, date: 0 };
   const remainingFreePurchases = getRemainingFreePurchases(dailyPurchases);
-  const hasPurchasesRemaining = isVIP || remainingFreePurchases > 0;
+  const hasPurchasesRemaining =
+    hasTradeReputation || remainingFreePurchases > 0;
 
   return (
     <div className="flex flex-col divide-brown-600">
       <div className="pl-2 pt-2 space-y-1 sm:space-y-0 sm:flex items-center justify-between ml-1.5">
         <VIPAccess
-          isVIP={isVIP}
+          isVIP={hasTradeReputation}
           onUpgrade={() => openModal("BUY_BANNER")}
           text={t("bumpkinTrade.unlockMoreTrades")}
         />
-        {!isVIP && (
+        {!hasTradeReputation && (
           <Label
             type={hasPurchasesRemaining ? "success" : "danger"}
             className="-ml-2"

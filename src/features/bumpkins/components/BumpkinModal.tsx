@@ -36,6 +36,7 @@ import { formatNumber } from "lib/utils/formatNumber";
 import { hasFeatureAccess } from "lib/flags";
 import { AuthMachineState } from "features/auth/lib/authMachine";
 import { MachineState } from "features/game/lib/gameMachine";
+import { MyReputation } from "features/island/hud/components/reputation/Reputation";
 
 type ViewState = "home" | "achievements" | "skills";
 
@@ -262,6 +263,8 @@ export const BumpkinModal: React.FC<Props> = ({
                   </div>
                 </div>
               </div>
+
+              {hasFeatureAccess(gameState, "REPUTATION") && <MyReputation />}
 
               {!hasFeatureAccess(gameState, "SKILLS_REVAMP") && (
                 <ButtonPanel

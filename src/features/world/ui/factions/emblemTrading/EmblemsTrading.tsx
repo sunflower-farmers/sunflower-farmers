@@ -6,13 +6,10 @@ import { Context } from "features/game/GameProvider";
 import { Context as AuthContext } from "features/auth/lib/Provider";
 import { useActor } from "@xstate/react";
 
-import tradeIcon from "assets/icons/trade.png";
 import {
   FloorPrices,
   getListingsFloorPrices,
 } from "features/game/actions/getListingsFloorPrices";
-import { BuyPanel } from "./BuyPanel";
-import { Trade } from "./Trade";
 import { FactionEmblem, FactionName } from "features/game/types/game";
 import { ITEM_DETAILS } from "features/game/types/images";
 import { Emblems } from "./Emblems";
@@ -102,15 +99,15 @@ export const EmblemsTrading: React.FC<Props> = ({ onClose, emblem }) => {
         onClose={notCloseable ? undefined : onClose}
         tabs={[
           { icon: ITEM_DETAILS[emblem].image, name: t("faction.emblems") },
-          { icon: SUNNYSIDE.icons.search, name: t("buy") },
-          { icon: tradeIcon, name: t("sell") },
+          // { icon: SUNNYSIDE.icons.search, name: t("buy") },
+          // { icon: tradeIcon, name: t("sell") },
         ]}
         setCurrentTab={setTab}
         currentTab={tab}
       >
         {tab === 0 && <Emblems emblem={emblem} factionName={faction} />}
-        {tab === 1 && <BuyPanel emblem={emblem} setUpdatedAt={setUpdatedAt} />}
-        {tab === 2 && <Trade floorPrices={floorPrices} emblem={emblem} />}
+        {/* {tab === 1 && <BuyPanel emblem={emblem} setUpdatedAt={setUpdatedAt} />}
+        {tab === 2 && <Trade floorPrices={floorPrices} emblem={emblem} />} */}
       </CloseButtonPanel>
     </>
   );

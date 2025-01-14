@@ -29,11 +29,12 @@ import { useSelector } from "@xstate/react";
 import { useParams } from "react-router";
 import { getKeys } from "features/game/types/craftables";
 import { TRADE_LIMITS } from "features/game/actions/tradeLimits";
-import { hasVipAccess } from "features/game/lib/vipAccess";
 import classNames from "classnames";
 import { ITEM_DETAILS } from "features/game/types/images";
 import { isMobile } from "mobile-device-detect";
 import Decimal from "decimal.js-light";
+import { Reputation } from "features/game/lib/reputation";
+import { hasReputation } from "features/game/lib/reputation";
 
 type TradeableHeaderProps = {
   authToken: string;
@@ -50,8 +51,11 @@ type TradeableHeaderProps = {
 };
 
 const _balance = (state: MachineState) => state.context.state.balance;
-const _isVIP = (state: MachineState) =>
-  hasVipAccess(state.context.state.inventory);
+const _hasTradeReputation = (state: MachineState) =>
+  hasReputation({
+    game: state.context.state,
+    reputation: Reputation.Cropkeeper,
+  });
 const _bertObsession = (state: MachineState) =>
   state.context.state.bertObsession;
 const _npcs = (state: MachineState) => state.context.state.npcs;
@@ -68,7 +72,7 @@ export const TradeableHeader: React.FC<TradeableHeaderProps> = ({
 }) => {
   const { gameService } = useContext(Context);
   const balance = useSelector(gameService, _balance);
-  const isVIP = useSelector(gameService, _isVIP);
+  const hasTradeReputation = useSelector(gameService, _hasTradeReputation);
   const params = useParams();
   const bertObsession = useSelector(gameService, _bertObsession);
   const npcs = useSelector(gameService, _npcs);
@@ -274,7 +278,7 @@ export const TradeableHeader: React.FC<TradeableHeaderProps> = ({
                   <Button
                     disabled={
                       !count ||
-                      (!isVIP && dailyListings >= 1) ||
+                      (!hasTradeReputation && dailyListings >= 1) ||
                       (isItemBertObsession &&
                         isBertsObesessionCompleted &&
                         !isResources)
@@ -315,7 +319,7 @@ export const TradeableHeader: React.FC<TradeableHeaderProps> = ({
                 onClick={onListClick}
                 disabled={
                   !count ||
-                  (!isVIP && dailyListings >= 1) ||
+                  (!hasTradeReputation && dailyListings >= 1) ||
                   (isItemBertObsession &&
                     isBertsObesessionCompleted &&
                     !isResources)
