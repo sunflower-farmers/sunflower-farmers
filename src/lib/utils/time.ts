@@ -243,44 +243,44 @@ export const formatDateTime = (isoString: string) => {
 
 export function getRelativeTime(timestamp: number): string {
   const now = new Date();
-  const secondsAgo = Math.floor((now.getTime() - timestamp) / 1000);
+  const diffInSeconds = Math.round((timestamp - now.getTime()) / 1000);
+  const isInFuture = diffInSeconds > 0;
+  const secondsAbs = Math.abs(diffInSeconds);
 
-  if (secondsAgo === 0) {
+  if (secondsAbs < 1) {
     return "now";
-  } else if (secondsAgo < 60) {
-    return translate("time.seconds.ago", {
-      time: secondsAgo,
+  } else if (secondsAbs < 60) {
+    return translate(isInFuture ? "time.seconds.in" : "time.seconds.ago", {
+      time: secondsAbs,
       secondORseconds:
-        secondsAgo !== 1
+        secondsAbs !== 1
           ? translate("time.seconds.full")
           : translate("time.second.full"),
     });
-  } else if (secondsAgo < 3600) {
-    const minutesAgo = Math.floor(secondsAgo / 60);
-    return translate("time.minutes.ago", {
-      time: minutesAgo,
+  } else if (secondsAbs < 3600) {
+    const minutes = Math.floor(secondsAbs / 60);
+    return translate(isInFuture ? "time.minutes.in" : "time.minutes.ago", {
+      time: minutes,
       minuteORminutes:
-        minutesAgo !== 1
+        minutes !== 1
           ? translate("time.minutes.full")
           : translate("time.minute.full"),
     });
-  } else if (secondsAgo < 86400) {
-    const hoursAgo = Math.floor(secondsAgo / 3600);
-    return translate("time.hours.ago", {
-      time: hoursAgo,
+  } else if (secondsAbs < 86400) {
+    const hours = Math.floor(secondsAbs / 3600);
+    return translate(isInFuture ? "time.hours.in" : "time.hours.ago", {
+      time: hours,
       hourORhours:
-        hoursAgo !== 1
+        hours !== 1
           ? translate("time.hours.full")
           : translate("time.hour.full"),
     });
   } else {
-    const daysAgo = Math.floor(secondsAgo / 86400);
-    return translate("time.days.ago", {
-      time: daysAgo,
+    const days = Math.floor(secondsAbs / 86400);
+    return translate(isInFuture ? "time.days.in" : "time.days.ago", {
+      time: days,
       dayORdays:
-        daysAgo !== 1
-          ? translate("time.days.full")
-          : translate("time.day.full"),
+        days !== 1 ? translate("time.days.full") : translate("time.day.full"),
     });
   }
 }
@@ -393,20 +393,22 @@ export function getUTCDateString() {
 
 export function getShortRelativeTime(timestamp: number): string {
   const now = new Date();
-  const secondsAgo = Math.floor((now.getTime() - timestamp) / 1000);
+  const diffInSeconds = Math.round((timestamp - now.getTime()) / 1000);
+  const isInFuture = diffInSeconds > 0;
+  const secondsAbs = Math.abs(diffInSeconds);
 
-  if (secondsAgo === 0) {
+  if (secondsAbs < 1) {
     return "now";
-  } else if (secondsAgo < 60) {
-    return `${secondsAgo}s ago`;
-  } else if (secondsAgo < 3600) {
-    const minutesAgo = Math.floor(secondsAgo / 60);
-    return `${minutesAgo}m ago`;
-  } else if (secondsAgo < 86400) {
-    const hoursAgo = Math.floor(secondsAgo / 3600);
-    return `${hoursAgo}h ago`;
+  } else if (secondsAbs < 60) {
+    return isInFuture ? `in ${secondsAbs}s` : `${secondsAbs}s ago`;
+  } else if (secondsAbs < 3600) {
+    const minutes = Math.floor(secondsAbs / 60);
+    return isInFuture ? `in ${minutes}m` : `${minutes}m ago`;
+  } else if (secondsAbs < 86400) {
+    const hours = Math.floor(secondsAbs / 3600);
+    return isInFuture ? `in ${hours}h` : `${hours}h ago`;
   } else {
-    const daysAgo = Math.floor(secondsAgo / 86400);
-    return `${daysAgo}d ago`;
+    const days = Math.floor(secondsAbs / 86400);
+    return isInFuture ? `in ${days}d` : `${days}d ago`;
   }
 }
