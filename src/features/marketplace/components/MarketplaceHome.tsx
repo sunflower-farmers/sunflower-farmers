@@ -149,9 +149,12 @@ export const MarketplaceNavigation: React.FC = () => {
               onClick={() => openModal("REPUTATION")}
             >
               <div className="flex flex-col p-1">
-                <Label type="danger" icon={crownIcon}>
-                  {`${getRemainingTrades({ game: gameService.getSnapshot().context.state })} Trades left`}
-                </Label>
+                <div className="flex justify-between items-center">
+                  <Label type="danger" icon={crownIcon}>
+                    {`${getRemainingTrades({ game: gameService.getSnapshot().context.state })} Trades left`}
+                  </Label>
+                  <p className="text-xxs underline">{t("read.more")}</p>
+                </div>
                 <p className="text-xs">{t("reputation.marketplace.trades")}</p>
               </div>
             </InnerPanel>

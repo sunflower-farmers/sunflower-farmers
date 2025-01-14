@@ -216,14 +216,6 @@ export const ReputationTiers: React.FC = () => {
           })}
         </Label>
       </div>
-      <NoticeboardItems
-        items={[
-          {
-            text: t("reputation.grandHarvester.description"),
-            icon: SUNNYSIDE.icons.basket,
-          },
-        ]}
-      />
     </div>
   );
 };

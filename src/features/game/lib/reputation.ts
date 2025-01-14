@@ -28,7 +28,7 @@ export const REPUTATION_TIERS: Record<Reputation, number> = {
   [Reputation.Seedling]: 250,
   [Reputation.Grower]: 350,
   [Reputation.Cropkeeper]: 600,
-  [Reputation.GrandHarvester]: 1000,
+  [Reputation.GrandHarvester]: 1100,
 };
 
 export const REPUTATION_POINTS = {
