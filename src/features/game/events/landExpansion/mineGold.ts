@@ -49,7 +49,7 @@ export function getMinedAt({ createdAt, game }: GetMinedAtArgs): number {
   }
 
   if (game.bumpkin.skills["Midas Sprint"]) {
-    totalSeconds = totalSeconds * 0.9;
+    totalSeconds = totalSeconds * 0.7;
   }
 
   const buff = GOLD_RECOVERY_TIME - totalSeconds;
@@ -63,7 +63,7 @@ export function mineGold({
   createdAt = Date.now(),
 }: Options): GameState {
   return produce(state, (stateCopy) => {
-    const { bumpkin, collectibles } = stateCopy;
+    const { bumpkin } = stateCopy;
 
     const { index } = action;
     if (!bumpkin) {

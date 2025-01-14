@@ -1909,24 +1909,6 @@ export const BUMPKIN_REVAMP_SKILL_TREE = {
     },
     disabled: false,
   },
-  "Midas Sprint": {
-    name: "Midas Sprint",
-    tree: "Mining",
-    requirements: {
-      points: 2,
-      tier: 2,
-      island: "basic",
-    },
-    boosts: {
-      buff: {
-        shortDescription: translate("skill.midasSprint"),
-        labelType: "info",
-        boostTypeIcon: SUNNYSIDE.icons.stopwatch,
-        boostedItemIcon: ITEM_DETAILS.Gold.image,
-      },
-    },
-    disabled: false,
-  },
   "Fire Kissed": {
     name: "Fire Kissed",
     tree: "Mining",
@@ -1983,6 +1965,24 @@ export const BUMPKIN_REVAMP_SKILL_TREE = {
         shortDescription: translate("skill.goldenTouch"),
         labelType: "success",
         boostTypeIcon: powerup,
+        boostedItemIcon: ITEM_DETAILS.Gold.image,
+      },
+    },
+    disabled: false,
+  },
+  "Midas Sprint": {
+    name: "Midas Sprint",
+    tree: "Mining",
+    requirements: {
+      points: 3,
+      tier: 3,
+      island: "basic",
+    },
+    boosts: {
+      buff: {
+        shortDescription: translate("skill.midasSprint"),
+        labelType: "info",
+        boostTypeIcon: SUNNYSIDE.icons.stopwatch,
         boostedItemIcon: ITEM_DETAILS.Gold.image,
       },
     },

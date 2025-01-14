@@ -3989,7 +3989,7 @@
   "skill.rockyFavor.debuff": "-0.5 Iron yield",
   "skill.ferrousFavor.buff": "+1 Iron yield",
   "skill.ferrousFavor.debuff": "-0.5 Stone yield",
-  "skill.midasSprint": "-10% Gold recovery time",
+  "skill.midasSprint": "-30% Gold recovery time",
   "skill.goldenTouch": "+0.5 Gold Yield",
   "skill.morePicks": "Increased stock: +70 Pickaxe, +20 Stone Pickaxe, +7 Iron Pickaxe",
   "skill.fireKissed": "+1 Crimstone yield on 5th consecutive day",
