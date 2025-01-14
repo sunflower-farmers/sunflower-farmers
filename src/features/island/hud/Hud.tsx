@@ -31,7 +31,7 @@ import {
   BumpkinRevampSkillName,
   getPowerSkills,
 } from "features/game/types/bumpkinSkills";
-import { GameCalendar } from "features/game/components/GameCalendar";
+import { GameCalendar } from "features/game/expansion/components/temperateSeason/GameCalendar";
 
 const _farmAddress = (state: MachineState) => state.context.farmAddress;
 

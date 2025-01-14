@@ -1,7 +1,18 @@
-import { GameState, InventoryItemName } from "./game";
+import { GameState, InventoryItemName, TemperateSeasonName } from "./game";
 import { Tool } from "./tools";
+import summer from "assets/icons/summer.webp";
+import autumn from "assets/icons/autumn.webp";
+import winter from "assets/icons/winter.webp";
+import spring from "assets/icons/spring.webp";
+import tornado from "assets/icons/tornado.webp";
+import fullMoon from "assets/icons/full_moon.webp";
+import tsunami from "assets/icons/tsunami.webp";
+import calendar from "assets/icons/calendar.webp";
+import { SUNNYSIDE } from "assets/sunnyside";
 
-export type CalendarEventName = "tornado";
+export type CalendarEventName = "unknown" | "calendar" | SeasonalEventName;
+
+export type SeasonalEventName = "tornado" | "tsunami" | "fullMoon";
 
 export type CalendarEvent = {
   triggeredAt: number;
@@ -20,7 +31,15 @@ export function getPendingCalendarEvent({
     // Is not in the future
     .filter((event) => new Date(event.date) <= new Date())
     // Has not been triggered already
-    .filter((event) => !game.calendar[event.name]?.triggeredAt)
+    .filter((event) => {
+      const isCalendarEvent = (name: string): name is SeasonalEventName => {
+        return ["tornado", "tsunami", "fullMoon"].includes(name);
+      };
+
+      return isCalendarEvent(event.name)
+        ? !game.calendar[event.name]?.triggeredAt
+        : true;
+    })
     // Filter out events 3 days old
     .filter((event) => {
       const eventDate = new Date(event.date);
@@ -65,4 +84,82 @@ export const WEATHER_SHOP: Partial<Record<InventoryItemName, Tool>> = {
     ingredients: {},
     price: 1000,
   },
+};
+
+export const SEASON_DETAILS: Record<
+  TemperateSeasonName,
+  {
+    icon: string;
+    inSeason: InventoryItemName[];
+  }
+> = {
+  spring: {
+    icon: spring,
+    inSeason: [
+      "Sunflower",
+      // "Rhubarb",
+      "Carrot",
+      "Cabbage",
+      "Beetroot",
+      "Parsnip",
+      "Corn",
+      "Radish",
+      "Wheat",
+      "Barley",
+    ],
+  },
+  summer: {
+    icon: summer,
+    inSeason: [
+      "Sunflower",
+      "Potato",
+      // "Zucchini",
+      "Soybean",
+      // "Hot Pepper",
+      // "Coffee",
+      "Eggplant",
+      "Corn",
+      "Radish",
+      "Wheat",
+    ],
+  },
+  autumn: {
+    icon: autumn,
+    inSeason: [
+      "Sunflower",
+      "Potato",
+      "Pumpkin",
+      "Carrot",
+      // "Broccoli",
+      "Beetroot",
+      "Eggplant",
+      "Wheat",
+      // "Artichoke",
+      "Barley",
+    ],
+  },
+  winter: {
+    icon: winter,
+    inSeason: [
+      "Sunflower",
+      "Potato",
+      // "Yam",
+      "Cabbage",
+      "Beetroot",
+      "Cauliflower",
+      "Parsnip",
+      // "Onion",
+      // "Turnip",
+      "Wheat",
+      "Kale",
+    ],
+  },
+};
+
+export const CALENDAR_EVENT_ICONS: Record<CalendarEventName, string> = {
+  tornado: tornado,
+  fullMoon: fullMoon,
+  tsunami: tsunami,
+  unknown: SUNNYSIDE.icons.lightning,
+  calendar: calendar,
 };

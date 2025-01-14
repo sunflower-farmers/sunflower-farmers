@@ -8,10 +8,6 @@ import { Context } from "features/game/GameProvider";
 
 import winterBanner from "assets/temperate_seasons/winter_banner.webp";
 import { ITEM_DETAILS } from "features/game/types/images";
-import {
-  InventoryItemName,
-  TemperateSeasonName,
-} from "features/game/types/game";
 import { useSelector } from "@xstate/react";
 import { MachineState } from "features/game/lib/gameMachine";
 import {
@@ -24,115 +20,44 @@ import { useTranslation } from "react-i18next";
 import { IngredientsPopover } from "components/ui/IngredientsPopover";
 import { ModalOverlay } from "components/ui/ModalOverlay";
 import { getRelativeTime } from "lib/utils/time";
+import {
+  SEASON_DETAILS,
+  SeasonalEventName,
+} from "features/game/types/calendar";
 
-export const SEASON_DETAILS: Record<
-  TemperateSeasonName,
-  {
-    icon: string;
-    inSeason: InventoryItemName[];
-  }
-> = {
-  spring: {
-    icon: SUNNYSIDE.resource.tree_stump,
-    inSeason: [
-      "Sunflower",
-      // "Rhubarb",
-      "Carrot",
-      "Cabbage",
-      "Beetroot",
-      "Parsnip",
-      "Corn",
-      "Radish",
-      "Wheat",
-      "Barley",
-    ],
-  },
-  summer: {
-    icon: SUNNYSIDE.resource.tree_stump,
-    inSeason: [
-      "Sunflower",
-      "Potato",
-      // "Zucchini",
-      "Soybean",
-      // "Hot Pepper",
-      // "Coffee",
-      "Eggplant",
-      "Corn",
-      "Radish",
-      "Wheat",
-    ],
-  },
-  autumn: {
-    icon: SUNNYSIDE.resource.tree_stump,
-    inSeason: [
-      "Sunflower",
-      "Potato",
-      "Pumpkin",
-      "Carrot",
-      // "Broccoli",
-      "Beetroot",
-      "Eggplant",
-      "Wheat",
-      // "Artichoke",
-      "Barley",
-    ],
-  },
-  winter: {
-    icon: SUNNYSIDE.resource.tree_stump,
-    inSeason: [
-      "Sunflower",
-      "Potato",
-      // "Yam",
-      "Cabbage",
-      "Beetroot",
-      "Cauliflower",
-      "Parsnip",
-      // "Onion",
-      // "Turnip",
-      "Wheat",
-      "Kale",
-    ],
-  },
-};
-
-type SeasonEventName = "Tornado" | "Tsunami" | "Unknown";
 const DUMMY_EVENT_DATA: Record<
-  SeasonEventName,
+  SeasonalEventName,
   {
     icon: string;
     description: string;
     resolution?: string;
   }
 > = {
-  Tornado: {
+  tornado: {
     icon: SUNNYSIDE.icons.firePitIcon,
     description: "A destructive tornado past through your farm!",
     resolution: "Construct wind turbines to dissipate its energy.",
   },
-  Tsunami: {
+  fullMoon: {
     icon: SUNNYSIDE.icons.water,
     description: "There was a large tsunami that hit your farm!",
     resolution: "Build mangroves along the coast to protect your farm.",
-  },
-  Unknown: {
-    icon: SUNNYSIDE.icons.lightning,
-    description: "Something is upcoming!",
   },
 };
 
 type WeekData = {
   day: string;
-  event: SeasonEventName | "Unknown";
+  event: SeasonalEventName;
 };
 
 const DUMMY_WEEK_DATA: WeekData[] = [
-  { day: "Monday", event: "Tornado" },
-  { day: "Tuesday", event: "Tsunami" },
-  { day: "Wednesday", event: "Tornado" },
-  { day: "Thursday", event: "Tsunami" },
-  { day: "Friday", event: "Unknown" },
-  { day: "Saturday", event: "Unknown" },
-  { day: "Sunday", event: "Unknown" },
+  { day: "Monday", event: "tornado" },
+  { day: "Tuesday", event: "tsunami" },
+  { day: "Wednesday", event: "tornado" },
+  { day: "Thursday", event: "tsunami" },
+  { day: "Friday", event: "fullMoon" },
+  { day: "Saturday", event: "fullMoon" },
+  { day: "Sunday", event: "fullMoon" },
 ];
 
 const SeasonDayDetails: React.FC<{
@@ -164,7 +89,7 @@ const SeasonDayDetails: React.FC<{
         </div>
       </div>
 
-      {DUMMY_WEEK_DATA[weekDay].event === "Unknown" && (
+      {DUMMY_WEEK_DATA[weekDay].event === "unknown" && (
         <div className="flex flex-col gap-2 my-2 w-full">
           <Label type="default">{t("temperateSeason.possibleEvents")}</Label>
           <div className="flex flex-col gap-2">
