@@ -69,6 +69,14 @@ export const IMAGES: Record<CropName, string> = {
   Kale: "kale",
   Soybean: "soybean",
   Barley: "barley",
+  Rhubarb: "rhubarb",
+  Zuchinni: "zuchinni",
+  Yam: "yam",
+  Brocolli: "brocolli",
+  Pepper: "pepper",
+  Onion: "onion",
+  Turnip: "turnip",
+  Artichoke: "artichoke",
 };
 
 export const CROP_LIFECYCLE: Record<CropName, Lifecycle> = getKeys(

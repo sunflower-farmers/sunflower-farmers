@@ -16,7 +16,15 @@ export type CropName =
   | "Radish"
   | "Wheat"
   | "Kale"
-  | "Barley";
+  | "Barley"
+  | "Rhubarb"
+  | "Zuchinni"
+  | "Yam"
+  | "Brocolli"
+  | "Pepper"
+  | "Onion"
+  | "Turnip"
+  | "Artichoke";
 
 export type Crop = {
   sellPrice: number;
@@ -166,6 +174,54 @@ export const CROPS: Record<CropName, Crop> = {
     name: "Barley",
     description: translate("description.barley"),
   },
+  Rhubarb: {
+    sellPrice: 12,
+    harvestSeconds: 10 * 60,
+    name: "Rhubarb",
+    description: translate("description.rhubarb"),
+  },
+  Zuchinni: {
+    sellPrice: 12,
+    harvestSeconds: 30 * 60,
+    name: "Zuchinni",
+    description: translate("description.zuchinni"),
+  },
+  Yam: {
+    sellPrice: 12,
+    harvestSeconds: 60 * 60,
+    name: "Yam",
+    description: translate("description.yam"),
+  },
+  Brocolli: {
+    sellPrice: 12,
+    harvestSeconds: 2 * 60 * 60,
+    name: "Brocolli",
+    description: translate("description.brocolli"),
+  },
+  Pepper: {
+    sellPrice: 12,
+    harvestSeconds: 4 * 60 * 60,
+    name: "Pepper",
+    description: translate("description.pepper"),
+  },
+  Onion: {
+    sellPrice: 12,
+    harvestSeconds: 20 * 60 * 60,
+    name: "Onion",
+    description: translate("description.onion"),
+  },
+  Turnip: {
+    sellPrice: 12,
+    harvestSeconds: 24 * 60 * 60,
+    name: "Turnip",
+    description: translate("description.turnip"),
+  },
+  Artichoke: {
+    sellPrice: 12,
+    harvestSeconds: 36 * 60 * 60,
+    name: "Artichoke",
+    description: translate("description.artichoke"),
+  },
 };
 
 export type CropSeedName = `${CropName} Seed`;
@@ -290,5 +346,69 @@ export const CROP_SEEDS: Record<CropSeedName, Seed> = {
     bumpkinLevel: 14,
     plantingSpot: "Crop Plot",
     yield: "Barley",
+  },
+  "Rhubarb Seed": {
+    price: 10,
+    description: translate("description.rhubarb"),
+    plantSeconds: 10 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Rhubarb",
+  },
+  "Zuchinni Seed": {
+    price: 10,
+    description: translate("description.zuchinni"),
+    plantSeconds: 30 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Zuchinni",
+  },
+  "Yam Seed": {
+    price: 10,
+    description: translate("description.yam"),
+    plantSeconds: 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Yam",
+  },
+  "Brocolli Seed": {
+    price: 10,
+    description: translate("description.brocolli"),
+    plantSeconds: 2 * 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Brocolli",
+  },
+  "Pepper Seed": {
+    price: 10,
+    description: translate("description.pepper"),
+    plantSeconds: 4 * 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Pepper",
+  },
+  "Onion Seed": {
+    price: 10,
+    description: translate("description.onion"),
+    plantSeconds: 20 * 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Onion",
+  },
+  "Turnip Seed": {
+    price: 10,
+    description: translate("description.turnip"),
+    plantSeconds: 24 * 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Turnip",
+  },
+  "Artichoke Seed": {
+    price: 10,
+    description: translate("description.artichoke"),
+    plantSeconds: 36 * 60 * 60,
+    bumpkinLevel: 14,
+    plantingSpot: "Crop Plot",
+    yield: "Artichoke",
   },
 };
