@@ -21,7 +21,7 @@ export const CalendarEvent: React.FC = () => {
   return (
     <Modal show>
       {event === "tornado" && <Tornado acknowledge={handleAcknowledge} />}
-      {event === "full moon" && <FullMoon acknowledge={handleAcknowledge} />}
+      {event === "fullMoon" && <FullMoon acknowledge={handleAcknowledge} />}
       {!event && (
         <Panel>
           <Button

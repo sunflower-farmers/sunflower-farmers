@@ -1,6 +1,6 @@
 import {
-  CalendarEventName,
   getActiveCalenderEvent,
+  SeasonalEventName,
 } from "features/game/types/calendar";
 import { GameState } from "features/game/types/game";
 import { produce } from "immer";
@@ -28,7 +28,7 @@ export function acknowledgeCalendarEvent({
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    stateCopy.calendar[event as CalendarEventName]!.acknowledgedAt = createdAt;
+    stateCopy.calendar[event as SeasonalEventName]!.acknowledgedAt = createdAt;
 
     return stateCopy;
   });
