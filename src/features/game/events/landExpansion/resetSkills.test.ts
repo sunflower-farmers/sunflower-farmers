@@ -5,7 +5,7 @@ import Decimal from "decimal.js-light";
 describe("resetSkills", () => {
   const dateNow = Date.now();
 
-  it.only("requires Bumpkin to have skills", () => {
+  it("requires Bumpkin to have skills", () => {
     expect(() => {
       resetSkills({
         state: {
@@ -35,8 +35,7 @@ describe("resetSkills", () => {
         action: { type: "skills.reset" },
         createdAt: dateNow,
       });
-      //}).toThrow("You can only reset your skills once every 3 months");
-    }).toThrow("You can only reset your skills once every 5 minutes");
+    }).toThrow("You can only reset your skills once every 3 months");
   });
 
   it("requires player to have enough SFL to reset skills", () => {

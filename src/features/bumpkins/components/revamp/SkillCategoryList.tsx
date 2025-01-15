@@ -193,16 +193,15 @@ export const SkillCategoryList = ({
             <div className="flex flex-row items-center w-full justify-between">
               <Label type="danger">{"Skills Reset"}</Label>
               <Label type="warning" icon={sflIcon}>
-                {"0 SFL"} {/* Will change to 10 SFL on release */}
+                {"10 SFL"}
               </Label>
             </div>
             <p className="text-xs py-4 px-2 text-center">
               {
-                "Are you sure you want to reset all your skills? This action cannot be undone and will cost 0 SFL. You will be able to reset your skills again in 3 months."
+                "Are you sure you want to reset all your skills? This action cannot be undone and will cost 10 SFL. You will be able to reset your skills again in 3 months."
               }
-              {/* Will change to 10 SFL on release */}
             </p>
-            {/* {!threeMonthsSinceLastReset && (
+            {!threeMonthsSinceLastReset && (
               <Label
                 type="danger"
                 icon={SUNNYSIDE.icons.stopwatch}
@@ -210,7 +209,7 @@ export const SkillCategoryList = ({
               >
                 {`${getTimeUntilNextReset()} until you can reset your skills again`}
               </Label>
-            )} */}
+            )}
             {!enoughSfl && (
               <Label type="danger" icon={sflIcon} className="mb-2">
                 {"You do not have enough SFL"}
@@ -218,7 +217,7 @@ export const SkillCategoryList = ({
             )}
             <Button
               onClick={handleSkillsReset}
-              disabled={!hasSkills} // || !threeMonthsSinceLastReset|| !enoughSfl
+              disabled={!hasSkills || !threeMonthsSinceLastReset || !enoughSfl}
             >
               {"Reset Skills"}
             </Button>
