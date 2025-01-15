@@ -6,7 +6,7 @@ import React, {
   useContext,
   ReactNode,
 } from "react";
-import PWAInstall from "@khmyznikov/pwa-install/dist/pwa-install.react.js";
+import PWAInstall from "@khmyznikov/pwa-install/react-legacy";
 import { PWAInstallElement } from "@khmyznikov/pwa-install";
 import { onboardingAnalytics } from "lib/onboardingAnalytics";
 
