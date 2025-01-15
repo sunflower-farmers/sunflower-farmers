@@ -164,25 +164,42 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
     );
 
   const disabled = () => {
-    // For crop fertiliser skills (Sprout Surge, Root Rocket)
-    if (isCropFertiliserSkill) {
-      const unfertilisedPlots = Object.values(crops).filter(
-        (plot) => !plot.fertiliser,
-      ).length;
-      const fertiliser =
-        selectedSkill.name === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
-      const fertiliserCount = inventory[fertiliser] ?? new Decimal(0);
+    switch (selectedSkill.name) {
+      // Crop fertiliser skills
+      case "Sprout Surge":
+      case "Root Rocket": {
+        const unfertilisedPlots = Object.values(crops).filter(
+          (plot) => !plot.fertiliser,
+        ).length;
+        const fertiliser =
+          selectedSkill.name === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
+        const fertiliserCount = inventory[fertiliser] ?? new Decimal(0);
 
-      return fertiliserCount.lt(unfertilisedPlots) || unfertilisedPlots === 0;
+        return fertiliserCount.lt(unfertilisedPlots) || unfertilisedPlots === 0;
+      }
+
+      // Fruit fertiliser skill
+      case "Blend-tastic":
+        return Object.values(fruitPatches).every((patch) => patch.fertiliser);
+
+      case "Instant Growth": {
+        const plotsStatus = Object.values(crops).map((plot) => {
+          if (!plot.crop) return "empty";
+          return isReadyToHarvest(Date.now(), plot.crop, CROPS[plot.crop.name])
+            ? "ready"
+            : "growing";
+        });
+
+        // Return true if at least one plot is growing and skill is available
+        return (
+          !plotsStatus.includes("growing") || !powerSkillReady || !itemsRequired
+        );
+      }
+
+      // Other power skills
+      default:
+        return !powerSkillReady || !itemsRequired;
     }
-
-    // For Blend-tastic skill
-    if (isFruitFertiliserSkill) {
-      return Object.values(fruitPatches).every((patch) => patch.fertiliser);
-    }
-
-    // For other power skills
-    return !powerSkillReady || !itemsRequired;
   };
 
   return (
