@@ -179,6 +179,9 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
     );
 
   const disabled = () => {
+    // Base conditions for all skills
+    if (!powerSkillReady || !itemsRequired) return true;
+
     switch (skillName) {
       // Crop fertiliser skills
       case "Sprout Surge":
@@ -198,43 +201,33 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
         return Object.values(fruitPatches).every((patch) => patch.fertiliser);
 
       case "Instant Growth": {
+        // Checks if all plots are empty or ready to harvest.
         const plotsStatus = Object.values(crops).map((plot) => {
           if (!plot.crop) return "empty";
           return isReadyToHarvest(Date.now(), plot.crop, CROPS[plot.crop.name])
             ? "ready"
             : "growing";
         });
-
-        // Return true if at least one plot is growing and skill is available
-        return (
-          !plotsStatus.includes("growing") || !powerSkillReady || !itemsRequired
-        );
+        return !plotsStatus.includes("growing");
       }
 
       case "Tree Blitz": {
-        const areTreesReplenishing = Object.values(trees).every((tree) =>
-          canChop(tree),
-        );
-        return areTreesReplenishing || !powerSkillReady || !itemsRequired;
+        return Object.values(trees).every((tree) => canChop(tree));
       }
 
       case "Greenhouse Guru": {
-        const areGreenhousePotsEmpty = Object.values(pots).every(
-          (pot) => !pot.plant,
-        );
-        return areGreenhousePotsEmpty || !powerSkillReady || !itemsRequired;
+        return Object.values(pots).every((pot) => !pot.plant);
       }
 
       case "Instant Gratification": {
-        const areCookingBuildingsEmpty = getKeys(
-          BUILDING_DAILY_OIL_CAPACITY,
-        ).every((building) => !buildings[building]?.[0].crafting);
-        return areCookingBuildingsEmpty || !powerSkillReady || !itemsRequired;
+        return getKeys(BUILDING_DAILY_OIL_CAPACITY).every(
+          (building) => !buildings[building]?.[0].crafting,
+        );
       }
 
       // Other power skills
       default:
-        return !powerSkillReady || !itemsRequired;
+        return false;
     }
   };
 
