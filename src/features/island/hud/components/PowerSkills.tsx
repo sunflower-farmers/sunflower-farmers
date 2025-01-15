@@ -1,7 +1,6 @@
 import { useSelector } from "@xstate/react";
 import { SUNNYSIDE } from "assets/sunnyside";
 import { Button } from "components/ui/Button";
-import { ConfirmationModal } from "components/ui/ConfirmationModal";
 import { Label } from "components/ui/Label";
 import { Modal } from "components/ui/Modal";
 import { OuterPanel } from "components/ui/Panel";
@@ -24,7 +23,6 @@ import { TimerDisplay } from "features/retreat/components/auctioneer/AuctionDeta
 import { gameAnalytics } from "lib/gameAnalytics";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
 import { useCountdown } from "lib/utils/hooks/useCountdown";
-import { millisecondsToString } from "lib/utils/time";
 import React, { useContext, useState } from "react";
 import {
   INNER_CANVAS_WIDTH,
@@ -33,6 +31,10 @@ import {
 import { SkillSquareIcon } from "features/bumpkins/components/revamp/SkillSquareIcon";
 import { getSkillImage } from "features/bumpkins/components/revamp/SkillPathDetails";
 import tradeOffs from "src/assets/icons/tradeOffs.png";
+import { canChop } from "features/game/events/landExpansion/chop";
+import { BUILDING_DAILY_OIL_CAPACITY } from "features/game/events/landExpansion/supplyCookingOil";
+import { getKeys } from "features/game/types/decorations";
+import { canDrillOilReserve } from "features/game/events/landExpansion/drillOilReserve";
 
 interface PowerSkillsProps {
   show: boolean;
@@ -41,7 +43,7 @@ interface PowerSkillsProps {
 export const PowerSkills: React.FC<PowerSkillsProps> = ({ show, onHide }) => {
   const { t } = useAppTranslation();
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} size="lg">
       <CloseButtonPanel
         onClose={onHide}
         container={OuterPanel}
@@ -61,6 +63,17 @@ export const PowerSkills: React.FC<PowerSkillsProps> = ({ show, onHide }) => {
 const _bumpkin = (state: MachineState) => state.context.state.bumpkin;
 const _inventory = (state: MachineState) => state.context.state.inventory;
 const _crops = (state: MachineState) => state.context.state.crops;
+const _fruitPatches = (state: MachineState) => state.context.state.fruitPatches;
+const _trees = (state: MachineState) => state.context.state.trees;
+const _pots = (state: MachineState) => state.context.state.greenhouse.pots;
+const _buildings = (state: MachineState) => state.context.state.buildings;
+const _flowerBeds = (state: MachineState) =>
+  state.context.state.flowers.flowerBeds;
+const _oilReserves = (state: MachineState) => state.context.state.oilReserves;
+const _henHouseAnimals = (state: MachineState) =>
+  state.context.state.henHouse.animals;
+const _barnAnimals = (state: MachineState) => state.context.state.barn.animals;
+
 interface PowerSkillsContentProps {
   onClose: () => void;
 }
@@ -70,26 +83,61 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const bumpkin = useSelector(gameService, _bumpkin);
   const inventory = useSelector(gameService, _inventory);
   const crops = useSelector(gameService, _crops);
+  const fruitPatches = useSelector(gameService, _fruitPatches);
+  const trees = useSelector(gameService, _trees);
+  const pots = useSelector(gameService, _pots);
+  const buildings = useSelector(gameService, _buildings);
+  const flowerBeds = useSelector(gameService, _flowerBeds);
+  const oilReserves = useSelector(gameService, _oilReserves);
+  const henHouseAnimals = useSelector(gameService, _henHouseAnimals);
+  const barnAnimals = useSelector(gameService, _barnAnimals);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
   const powerSkillsUnlocked = powerSkills.filter(
     (skill) => !!skills[skill.name as BumpkinRevampSkillName],
   );
+  const [fertiliserSkill, nonFertiliserSkill] = powerSkillsUnlocked.reduce(
+    (acc, skill) => {
+      const isFertilizer = [
+        "Sprout Surge",
+        "Root Rocket",
+        "Blend-tastic",
+      ].includes(skill.name);
+      acc[isFertilizer ? 0 : 1].push(skill);
+      return acc;
+    },
+    [[], []] as [BumpkinSkillRevamp[], BumpkinSkillRevamp[]],
+  );
+
   const [selectedSkill, setSelectedSkill] = useState<BumpkinSkillRevamp>(
     powerSkillsUnlocked[0],
   );
+
+  const {
+    boosts,
+    image,
+    name: skillName,
+    power,
+    requirements,
+    npc,
+    tree,
+  } = selectedSkill as { name: BumpkinRevampSkillName } & BumpkinSkillRevamp;
+  const { cooldown, items, tier } = requirements;
+  const { buff, debuff } = boosts;
+
   const [useSkillConfirmation, setUseSkillConfirmation] = useState(false);
+
+  const isCropFertiliserSkill =
+    skillName === "Sprout Surge" || skillName === "Root Rocket";
+
+  const isFruitFertiliserSkill = skillName === "Blend-tastic";
 
   const useSkill = () => {
     onClose();
     setUseSkillConfirmation(false);
 
-    const isFertiliserSkill =
-      selectedSkill.name === "Sprout Surge" ||
-      selectedSkill.name === "Root Rocket";
-
-    if (isFertiliserSkill) {
+    if (isCropFertiliserSkill) {
       Object.entries(crops).map(([id, cropPlot]) => {
         const readyToHarvest =
           !!cropPlot.crop &&
@@ -102,9 +150,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           const state = gameService.send("plot.fertilised", {
             plotID: id,
             fertiliser:
-              selectedSkill.name === "Sprout Surge"
-                ? "Sprout Mix"
-                : "Rapid Root",
+              skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root",
           });
 
           if (
@@ -114,23 +160,23 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
               event: "Tutorial:Fertilised:Completed",
             });
           }
-
-          return;
         }
-        return;
+      });
+    } else if (isFruitFertiliserSkill) {
+      Object.entries(fruitPatches).map(([id, fruitPatch]) => {
+        if (!fruitPatch.fertiliser) {
+          gameService.send("fruitPatch.fertilised", {
+            patchID: id,
+            fertiliser: "Fruitful Blend",
+          });
+        }
       });
     } else {
-      gameService.send("skill.used", { skill: selectedSkill?.name });
+      gameService.send("skill.used", { skill: skillName });
     }
   };
 
-  const { boosts, image, name, power, requirements, npc, tree } = selectedSkill;
-  const { cooldown, items, tier } = requirements;
-  const { buff, debuff } = boosts;
-
-  const nextSkillUse =
-    (previousPowerUseAt?.[selectedSkill.name as BumpkinRevampSkillName] ?? 0) +
-    (cooldown ?? 0);
+  const nextSkillUse = (previousPowerUseAt?.[skillName] ?? 0) + (cooldown ?? 0);
   const nextSkillUseCountdown = useCountdown(nextSkillUse);
 
   const powerSkillReady = nextSkillUse < Date.now();
@@ -141,8 +187,165 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
       (inventory[item as InventoryItemName] ?? new Decimal(0)).gte(quantity),
     );
 
+  function disabledConditions(): {
+    disabled: boolean;
+    reason: string;
+  } {
+    // Base conditions for all skills
+    if (!powerSkillReady)
+      return { disabled: true, reason: "Power Skill on Cooldown" };
+    if (!itemsRequired) {
+      return { disabled: true, reason: "Insufficient Items" };
+    }
+
+    switch (skillName) {
+      // Crop fertiliser skills
+      case "Sprout Surge":
+      case "Root Rocket": {
+        const unfertilisedPlots = Object.values(crops).filter(
+          (plot) => !plot.fertiliser,
+        ).length;
+        const fertiliser =
+          skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
+        const fertiliserCount = inventory[fertiliser] ?? new Decimal(0);
+
+        if (fertiliserCount.lt(unfertilisedPlots)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.insufficientFertiliser", {
+              fertiliser,
+            }),
+          };
+        }
+        if (unfertilisedPlots === 0) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.allPlotsFertilised"),
+          };
+        }
+        break;
+      }
+
+      // Fruit fertiliser skill
+      case "Blend-tastic": {
+        const unfertilisedPatches = Object.values(fruitPatches).filter(
+          (patch) => !patch.fertiliser,
+        ).length;
+        const fertiliserCount = inventory["Fruitful Blend"] ?? new Decimal(0);
+        if (fertiliserCount.lt(unfertilisedPatches)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.insufficientFertiliser", {
+              fertiliser: "Fruitful Blend",
+            }),
+          };
+        }
+        if (unfertilisedPatches === 0) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.allFruitPatchesFertilised"),
+          };
+        }
+        break;
+      }
+
+      case "Instant Growth": {
+        // Checks if all plots are empty or ready to harvest.
+        const plotsStatus = Object.values(crops).map((plot) => {
+          if (!plot.crop) return "empty";
+          return isReadyToHarvest(Date.now(), plot.crop, CROPS[plot.crop.name])
+            ? "ready"
+            : "growing";
+        });
+        if (!plotsStatus.includes("growing")) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noCropsGrowing"),
+          };
+        }
+        break;
+      }
+
+      case "Tree Blitz": {
+        if (Object.values(trees).every((tree) => canChop(tree))) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noTreesRecovering"),
+          };
+        }
+        break;
+      }
+
+      case "Greenhouse Guru": {
+        if (Object.values(pots).every((pot) => !pot.plant)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noGreenhouseProduceGrowing"),
+          };
+        }
+        break;
+      }
+
+      case "Instant Gratification": {
+        if (
+          getKeys(BUILDING_DAILY_OIL_CAPACITY).every(
+            (building) => !buildings[building]?.[0].crafting,
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noBuildingsAreCooking"),
+          };
+        }
+        break;
+      }
+
+      case "Petal Blessed": {
+        if (Object.values(flowerBeds).every((bed) => !bed.flower)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noFlowersGrowing"),
+          };
+        }
+        break;
+      }
+
+      case "Grease Lightning": {
+        if (
+          Object.values(oilReserves).every((reserve) =>
+            canDrillOilReserve(reserve),
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noOilreservesRefilling"),
+          };
+        }
+        break;
+      }
+
+      case "Apple-Tastic": {
+        if (
+          Object.values({ ...henHouseAnimals, ...barnAnimals }).every(
+            ({ state, awakeAt }) =>
+              state === "sick" || state === "ready" || awakeAt > Date.now(),
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.animalsSickReadyAsleep"),
+          };
+        }
+      }
+    }
+    return { disabled: false, reason: "" };
+  }
+
+  const { disabled, reason } = disabledConditions();
+
   return (
     <SplitScreenView
+      wideModal
       panel={
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col h-full px-1 py-0">
@@ -155,7 +358,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                   npc={npc}
                 />
               </div>
-              <span className="sm:text-center">{name}</span>
+              <span className="sm:text-center">{skillName}</span>
             </div>
             <div className="flex flex-col items-start mt-2">
               {buff && (
@@ -194,22 +397,66 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                 ))}
               </div>
             )}
+            {isCropFertiliserSkill && (
+              <div className="flex flex-col items-center mb-2">
+                <RequirementLabel
+                  type="item"
+                  requirement={
+                    new Decimal(
+                      Object.values(crops).filter(
+                        (plot) => !plot.fertiliser,
+                      ).length,
+                    )
+                  }
+                  item={
+                    skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root"
+                  }
+                  balance={
+                    inventory[
+                      skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root"
+                    ] ?? new Decimal(0)
+                  }
+                />
+              </div>
+            )}
+            {isFruitFertiliserSkill && (
+              <div className="flex flex-col items-center mb-2">
+                <RequirementLabel
+                  type="item"
+                  requirement={
+                    new Decimal(
+                      Object.values(fruitPatches).filter(
+                        (patch) => !patch.fertiliser,
+                      ).length,
+                    )
+                  }
+                  item={"Fruitful Blend"}
+                  balance={inventory["Fruitful Blend"] ?? new Decimal(0)}
+                />
+              </div>
+            )}
             <div className="flex flex-col lg:items-center">
               <Label
-                type={powerSkillReady ? "success" : "info"}
+                type={
+                  !powerSkillReady ? "info" : disabled ? "danger" : "success"
+                }
                 icon={!powerSkillReady ? SUNNYSIDE.icons.stopwatch : undefined}
                 secondaryIcon={
-                  powerSkillReady ? SUNNYSIDE.icons.confirm : undefined
+                  powerSkillReady && !disabled
+                    ? SUNNYSIDE.icons.confirm
+                    : undefined
                 }
                 className="mb-2"
               >
-                {powerSkillReady ? (
-                  t("powerSkills.ready")
-                ) : (
+                {!powerSkillReady ? (
                   <div className="flex lg:flex-col items-center">
                     <p className="mr-1">{t("powerSkills.nextUse")}</p>
                     <TimerDisplay time={nextSkillUseCountdown} />
                   </div>
+                ) : disabled ? (
+                  reason
+                ) : (
+                  t("powerSkills.ready")
                 )}
               </Label>
             </div>
@@ -217,72 +464,122 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
 
           {power && (
             <div className="flex space-x-1 sm:space-x-0 sm:space-y-1 sm:flex-col w-full">
-              <Button
-                disabled={!powerSkillReady || !itemsRequired}
-                onClick={() => setUseSkillConfirmation(true)}
-              >
-                {t("powerSkills.use")}
-              </Button>
+              {useSkillConfirmation ? (
+                <>
+                  <Button
+                    className="mr-1 sm:mr-0"
+                    onClick={() => setUseSkillConfirmation(false)}
+                  >
+                    {t("cancel")}
+                  </Button>
+                  <Button disabled={disabled} onClick={useSkill}>
+                    {t("powerSkills.use")}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  disabled={disabled}
+                  onClick={() => setUseSkillConfirmation(true)}
+                >
+                  {t("powerSkills.use")}
+                </Button>
+              )}
             </div>
           )}
-
-          <ConfirmationModal
-            show={useSkillConfirmation}
-            onHide={() => setUseSkillConfirmation(false)}
-            messages={[
-              t("powerSkills.confirmationMessage", {
-                skillName: name,
-              }),
-              ...(cooldown
-                ? [
-                    t("powerSkills.cooldownMessage", {
-                      cooldown: millisecondsToString(cooldown, {
-                        length: "short",
-                        removeTrailingZeros: true,
-                      }),
-                    }),
-                  ]
-                : []),
-            ]}
-            onCancel={() => setUseSkillConfirmation(false)}
-            onConfirm={useSkill}
-            confirmButtonLabel={t("powerSkills.useSkill")}
-          />
         </div>
       }
       content={
         <div className="pl-1">
-          <div
-            className="flex flex-row my-2 items-center"
-            style={{ margin: `${PIXEL_SCALE * 2}px` }}
-          >
-            <Label type="default">{t("powerSkills.unlockedSkills")}</Label>
-          </div>
-          <div className="flex flex-wrap mb-2">
-            {powerSkillsUnlocked.map((skill: BumpkinSkillRevamp) => {
-              const { name, image, tree, npc, power, boosts, requirements } =
-                skill;
-              const { boostTypeIcon, boostedItemIcon } = boosts.buff;
-              return (
-                <SkillBox
-                  key={name}
-                  className="mb-1"
-                  image={getSkillImage(image, boostedItemIcon, tree)}
-                  isSelected={selectedSkill === skill}
-                  onClick={() => setSelectedSkill(skill)}
-                  tier={requirements.tier}
-                  npc={npc}
-                  secondaryImage={
-                    boosts.debuff
-                      ? tradeOffs
-                      : power
-                        ? SUNNYSIDE.icons.lightning
-                        : boostTypeIcon
-                  }
-                />
-              );
-            })}
-          </div>
+          {nonFertiliserSkill.length > 0 && (
+            <>
+              <div
+                className="flex flex-row my-2 items-center"
+                style={{ margin: `${PIXEL_SCALE * 2}px` }}
+              >
+                <Label type="default">{t("powerSkills.title")}</Label>
+              </div>
+              <div className="flex flex-wrap mb-2">
+                {nonFertiliserSkill.map((skill: BumpkinSkillRevamp) => {
+                  const {
+                    name,
+                    image,
+                    tree,
+                    npc,
+                    power,
+                    boosts,
+                    requirements,
+                  } = skill;
+                  const { boostTypeIcon, boostedItemIcon } = boosts.buff;
+                  return (
+                    <SkillBox
+                      key={name}
+                      className="mb-1"
+                      image={getSkillImage(image, boostedItemIcon, tree)}
+                      isSelected={selectedSkill === skill}
+                      onClick={() => {
+                        setSelectedSkill(skill);
+                        setUseSkillConfirmation(false);
+                      }}
+                      tier={requirements.tier}
+                      npc={npc}
+                      secondaryImage={
+                        boosts.debuff
+                          ? tradeOffs
+                          : power
+                            ? SUNNYSIDE.icons.lightning
+                            : boostTypeIcon
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
+          {fertiliserSkill.length > 0 && (
+            <>
+              <div
+                className="flex flex-row my-2 items-center"
+                style={{ margin: `${PIXEL_SCALE * 2}px` }}
+              >
+                <Label type="default">{t("powerSkills.fertiliser")}</Label>
+              </div>
+              <div className="flex flex-wrap mb-2">
+                {fertiliserSkill.map((skill: BumpkinSkillRevamp) => {
+                  const {
+                    name,
+                    image,
+                    tree,
+                    npc,
+                    power,
+                    boosts,
+                    requirements,
+                  } = skill;
+                  const { boostTypeIcon, boostedItemIcon } = boosts.buff;
+                  return (
+                    <SkillBox
+                      key={name}
+                      className="mb-1"
+                      image={getSkillImage(image, boostedItemIcon, tree)}
+                      isSelected={selectedSkill === skill}
+                      onClick={() => {
+                        setSelectedSkill(skill);
+                        setUseSkillConfirmation(false);
+                      }}
+                      tier={requirements.tier}
+                      npc={npc}
+                      secondaryImage={
+                        boosts.debuff
+                          ? tradeOffs
+                          : power
+                            ? SUNNYSIDE.icons.lightning
+                            : boostTypeIcon
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       }
     />
