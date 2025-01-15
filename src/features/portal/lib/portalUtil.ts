@@ -93,6 +93,24 @@ export function submitScore({ score }: { score: number }) {
   }
 }
 
+/**
+ * When a player unlocks achievements
+ */
+export function achievementsUnlocked({
+  achievementNames,
+}: {
+  achievementNames: string[];
+}) {
+  if (!isInIframe) {
+    alert(`Sunflower Land running in test mode - achievements unlocked`);
+  } else {
+    window.parent.postMessage(
+      { event: "achievementsUnlocked", achievementNames },
+      "*",
+    );
+  }
+}
+
 export function authorisePortal() {
   if (isInIframe) {
     window.parent.postMessage("closePortal", "*");

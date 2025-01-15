@@ -131,6 +131,16 @@ export const Portal: React.FC<Props> = ({ portalName, onClose }) => {
       gameService.send("SAVE");
       return;
     }
+
+    // achievement
+    if (event.data.event === "achievementsUnlocked") {
+      gameService.send("minigame.achievementsUnlocked", {
+        id: portalName,
+        achievementNames: event.data.achievementNames,
+      });
+      gameService.send("SAVE");
+      return;
+    }
   };
 
   useEffect(() => {
