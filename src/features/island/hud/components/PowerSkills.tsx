@@ -93,13 +93,25 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const [selectedSkill, setSelectedSkill] = useState<BumpkinSkillRevamp>(
     powerSkillsUnlocked[0],
   );
+
+  const {
+    boosts,
+    image,
+    name: skillName,
+    power,
+    requirements,
+    npc,
+    tree,
+  } = selectedSkill as { name: BumpkinRevampSkillName } & BumpkinSkillRevamp;
+  const { cooldown, items, tier } = requirements;
+  const { buff, debuff } = boosts;
+
   const [useSkillConfirmation, setUseSkillConfirmation] = useState(false);
 
   const isCropFertiliserSkill =
-    selectedSkill.name === "Sprout Surge" ||
-    selectedSkill.name === "Root Rocket";
+    skillName === "Sprout Surge" || skillName === "Root Rocket";
 
-  const isFruitFertiliserSkill = selectedSkill.name === "Blend-tastic";
+  const isFruitFertiliserSkill = skillName === "Blend-tastic";
 
   const useSkill = () => {
     onClose();
@@ -118,9 +130,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           const state = gameService.send("plot.fertilised", {
             plotID: id,
             fertiliser:
-              selectedSkill.name === "Sprout Surge"
-                ? "Sprout Mix"
-                : "Rapid Root",
+              skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root",
           });
 
           if (
@@ -142,16 +152,12 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
         }
       });
     } else {
-      gameService.send("skill.used", { skill: selectedSkill?.name });
+      gameService.send("skill.used", { skill: skillName });
     }
   };
 
-  const { boosts, image, name, power, requirements, npc, tree } = selectedSkill;
-  const { cooldown, items, tier } = requirements;
-  const { buff, debuff } = boosts;
-
   const nextSkillUse =
-    (previousPowerUseAt?.[selectedSkill.name as BumpkinRevampSkillName] ?? 0) +
+    (previousPowerUseAt?.[skillName as BumpkinRevampSkillName] ?? 0) +
     (cooldown ?? 0);
   const nextSkillUseCountdown = useCountdown(nextSkillUse);
 
@@ -164,7 +170,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
     );
 
   const disabled = () => {
-    switch (selectedSkill.name) {
+    switch (skillName) {
       // Crop fertiliser skills
       case "Sprout Surge":
       case "Root Rocket": {
@@ -172,7 +178,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           (plot) => !plot.fertiliser,
         ).length;
         const fertiliser =
-          selectedSkill.name === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
+          skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
         const fertiliserCount = inventory[fertiliser] ?? new Decimal(0);
 
         return fertiliserCount.lt(unfertilisedPlots) || unfertilisedPlots === 0;
@@ -217,7 +223,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                   npc={npc}
                 />
               </div>
-              <span className="sm:text-center">{name}</span>
+              <span className="sm:text-center">{skillName}</span>
             </div>
             <div className="flex flex-col items-start mt-2">
               {buff && (
@@ -268,15 +274,11 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                     )
                   }
                   item={
-                    selectedSkill.name === "Sprout Surge"
-                      ? "Sprout Mix"
-                      : "Rapid Root"
+                    skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root"
                   }
                   balance={
                     inventory[
-                      selectedSkill.name === "Sprout Surge"
-                        ? "Sprout Mix"
-                        : "Rapid Root"
+                      skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root"
                     ] ?? new Decimal(0)
                   }
                 />
