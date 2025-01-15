@@ -31,6 +31,7 @@ import {
 import { SkillSquareIcon } from "features/bumpkins/components/revamp/SkillSquareIcon";
 import { getSkillImage } from "features/bumpkins/components/revamp/SkillPathDetails";
 import tradeOffs from "src/assets/icons/tradeOffs.png";
+import { canChop } from "features/game/events/landExpansion/chop";
 
 interface PowerSkillsProps {
   show: boolean;
@@ -60,6 +61,7 @@ const _bumpkin = (state: MachineState) => state.context.state.bumpkin;
 const _inventory = (state: MachineState) => state.context.state.inventory;
 const _crops = (state: MachineState) => state.context.state.crops;
 const _fruitPatches = (state: MachineState) => state.context.state.fruitPatches;
+const _trees = (state: MachineState) => state.context.state.trees;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -71,6 +73,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const inventory = useSelector(gameService, _inventory);
   const crops = useSelector(gameService, _crops);
   const fruitPatches = useSelector(gameService, _fruitPatches);
+  const trees = useSelector(gameService, _trees);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -200,6 +203,13 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
         return (
           !plotsStatus.includes("growing") || !powerSkillReady || !itemsRequired
         );
+      }
+
+      case "Tree Blitz": {
+        const areTreesReplenishing = Object.values(trees).every((tree) =>
+          canChop(tree),
+        );
+        return areTreesReplenishing || !powerSkillReady || !itemsRequired;
       }
 
       // Other power skills
