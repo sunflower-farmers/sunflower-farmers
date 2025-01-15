@@ -66,6 +66,8 @@ const _fruitPatches = (state: MachineState) => state.context.state.fruitPatches;
 const _trees = (state: MachineState) => state.context.state.trees;
 const _pots = (state: MachineState) => state.context.state.greenhouse.pots;
 const _buildings = (state: MachineState) => state.context.state.buildings;
+const _flowerBeds = (state: MachineState) =>
+  state.context.state.flowers.flowerBeds;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -80,6 +82,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const trees = useSelector(gameService, _trees);
   const pots = useSelector(gameService, _pots);
   const buildings = useSelector(gameService, _buildings);
+  const flowerBeds = useSelector(gameService, _flowerBeds);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -223,6 +226,10 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
         return getKeys(BUILDING_DAILY_OIL_CAPACITY).every(
           (building) => !buildings[building]?.[0].crafting,
         );
+      }
+
+      case "Petal Blessed": {
+        return Object.values(flowerBeds).every((bed) => !bed.flower);
       }
 
       // Other power skills
