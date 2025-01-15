@@ -171,9 +171,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
     }
   };
 
-  const nextSkillUse =
-    (previousPowerUseAt?.[skillName as BumpkinRevampSkillName] ?? 0) +
-    (cooldown ?? 0);
+  const nextSkillUse = (previousPowerUseAt?.[skillName] ?? 0) + (cooldown ?? 0);
   const nextSkillUseCountdown = useCountdown(nextSkillUse);
 
   const powerSkillReady = nextSkillUse < Date.now();
