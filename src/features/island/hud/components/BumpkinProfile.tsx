@@ -17,7 +17,7 @@ import {
 import Spritesheet, {
   SpriteSheetInstance,
 } from "components/animation/SpriteAnimator";
-import { Bumpkin } from "features/game/types/game";
+import { Bumpkin, GameState } from "features/game/types/game";
 import classNames from "classnames";
 import { SUNNYSIDE } from "assets/sunnyside";
 import { SpringValue } from "@react-spring/web";
@@ -66,11 +66,14 @@ interface AvatarProps {
   bumpkin?: Bumpkin;
   username?: string;
   showSkillPointAlert?: boolean;
+  state: GameState;
   onClick?: () => void;
 }
 
 export const BumpkinAvatar: React.FC<AvatarProps> = ({
   bumpkin,
+  // TODO: Remove when flag is removed
+  state,
   username,
   showSkillPointAlert,
   onClick,
@@ -112,7 +115,9 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
         className={classNames(`grid absolute -left-4 z-40 top-0`, {
           "cursor-pointer hover:img-highlight": !!onClick,
         })}
-        style={{ height: "80px" }}
+        style={{
+          height: hasFeatureAccess(state, "TEMPERATE_SEASON") ? "70px" : "80px",
+        }}
         onClick={onClick}
       >
         <img
@@ -156,7 +161,11 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
           image={SUNNYSIDE.ui.progressBarSprite}
           widthFrame={DIMENSIONS.original}
           heightFrame={DIMENSIONS.original}
-          zoomScale={new SpringValue(1)}
+          zoomScale={
+            new SpringValue(
+              hasFeatureAccess(state, "TEMPERATE_SEASON") ? 0.7 : 1,
+            )
+          }
           fps={10}
           steps={SPRITE_STEPS}
           autoplay={false}
@@ -166,6 +175,7 @@ export const BumpkinAvatar: React.FC<AvatarProps> = ({
           }}
         />
         <div
+          id="progress-bar"
           className={`col-start-1 row-start-1 flex justify-center   z-20 text-xs`}
           style={{
             width: `${DIMENSIONS.level.width}px`,
@@ -268,14 +278,29 @@ export const BumpkinProfile: React.FC<{
       </Modal>
 
       {/* Bumpkin profile */}
-      <BumpkinAvatar
-        bumpkin={state.bumpkin}
-        username={username}
-        onClick={handleShowHomeModal}
-        showSkillPointAlert={
-          showSkillPointAlert && !gameState.matches("visiting")
-        }
-      />
+      {hasFeatureAccess(gameState.context.state, "TEMPERATE_SEASON") ? (
+        <div className="scale-[0.7] absolute left-0 top-0">
+          <BumpkinAvatar
+            state={gameState.context.state}
+            bumpkin={state.bumpkin}
+            username={username}
+            onClick={handleShowHomeModal}
+            showSkillPointAlert={
+              showSkillPointAlert && !gameState.matches("visiting")
+            }
+          />
+        </div>
+      ) : (
+        <BumpkinAvatar
+          state={gameState.context.state}
+          bumpkin={state.bumpkin}
+          username={username}
+          onClick={handleShowHomeModal}
+          showSkillPointAlert={
+            showSkillPointAlert && !gameState.matches("visiting")
+          }
+        />
+      )}
     </>
   );
 };
