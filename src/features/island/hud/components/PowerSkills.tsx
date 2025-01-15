@@ -32,6 +32,8 @@ import { SkillSquareIcon } from "features/bumpkins/components/revamp/SkillSquare
 import { getSkillImage } from "features/bumpkins/components/revamp/SkillPathDetails";
 import tradeOffs from "src/assets/icons/tradeOffs.png";
 import { canChop } from "features/game/events/landExpansion/chop";
+import { BUILDING_DAILY_OIL_CAPACITY } from "features/game/events/landExpansion/supplyCookingOil";
+import { getKeys } from "features/game/types/decorations";
 
 interface PowerSkillsProps {
   show: boolean;
@@ -63,6 +65,7 @@ const _crops = (state: MachineState) => state.context.state.crops;
 const _fruitPatches = (state: MachineState) => state.context.state.fruitPatches;
 const _trees = (state: MachineState) => state.context.state.trees;
 const _pots = (state: MachineState) => state.context.state.greenhouse.pots;
+const _buildings = (state: MachineState) => state.context.state.buildings;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -76,6 +79,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const fruitPatches = useSelector(gameService, _fruitPatches);
   const trees = useSelector(gameService, _trees);
   const pots = useSelector(gameService, _pots);
+  const buildings = useSelector(gameService, _buildings);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -219,6 +223,13 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           (pot) => !pot.plant,
         );
         return areGreenhousePotsEmpty || !powerSkillReady || !itemsRequired;
+      }
+
+      case "Instant Gratification": {
+        const areCookingBuildingsEmpty = getKeys(
+          BUILDING_DAILY_OIL_CAPACITY,
+        ).every((building) => !buildings[building]?.[0].crafting);
+        return areCookingBuildingsEmpty || !powerSkillReady || !itemsRequired;
       }
 
       // Other power skills
