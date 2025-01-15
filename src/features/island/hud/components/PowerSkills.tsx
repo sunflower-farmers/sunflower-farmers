@@ -34,6 +34,7 @@ import tradeOffs from "src/assets/icons/tradeOffs.png";
 import { canChop } from "features/game/events/landExpansion/chop";
 import { BUILDING_DAILY_OIL_CAPACITY } from "features/game/events/landExpansion/supplyCookingOil";
 import { getKeys } from "features/game/types/decorations";
+import { canDrillOilReserve } from "features/game/events/landExpansion/drillOilReserve";
 
 interface PowerSkillsProps {
   show: boolean;
@@ -68,6 +69,7 @@ const _pots = (state: MachineState) => state.context.state.greenhouse.pots;
 const _buildings = (state: MachineState) => state.context.state.buildings;
 const _flowerBeds = (state: MachineState) =>
   state.context.state.flowers.flowerBeds;
+const _oilReserves = (state: MachineState) => state.context.state.oilReserves;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -83,6 +85,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const pots = useSelector(gameService, _pots);
   const buildings = useSelector(gameService, _buildings);
   const flowerBeds = useSelector(gameService, _flowerBeds);
+  const oilReserves = useSelector(gameService, _oilReserves);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -230,6 +233,12 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
 
       case "Petal Blessed": {
         return Object.values(flowerBeds).every((bed) => !bed.flower);
+      }
+
+      case "Grease Lightning": {
+        return Object.values(oilReserves).every((reserve) =>
+          canDrillOilReserve(reserve),
+        );
       }
 
       // Other power skills
