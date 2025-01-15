@@ -187,9 +187,16 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
       (inventory[item as InventoryItemName] ?? new Decimal(0)).gte(quantity),
     );
 
-  const disabled = () => {
+  function disabledConditions(): {
+    disabled: boolean;
+    reason: string;
+  } {
     // Base conditions for all skills
-    if (!powerSkillReady || !itemsRequired) return true;
+    if (!powerSkillReady)
+      return { disabled: true, reason: "Power Skill on Cooldown" };
+    if (!itemsRequired) {
+      return { disabled: true, reason: "Insufficient Items" };
+    }
 
     switch (skillName) {
       // Crop fertiliser skills
@@ -202,12 +209,45 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           skillName === "Sprout Surge" ? "Sprout Mix" : "Rapid Root";
         const fertiliserCount = inventory[fertiliser] ?? new Decimal(0);
 
-        return fertiliserCount.lt(unfertilisedPlots) || unfertilisedPlots === 0;
+        if (fertiliserCount.lt(unfertilisedPlots)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.insufficientFertiliser", {
+              fertiliser,
+            }),
+          };
+        }
+        if (unfertilisedPlots === 0) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.allPlotsFertilised"),
+          };
+        }
+        break;
       }
 
       // Fruit fertiliser skill
-      case "Blend-tastic":
-        return Object.values(fruitPatches).every((patch) => patch.fertiliser);
+      case "Blend-tastic": {
+        const unfertilisedPatches = Object.values(fruitPatches).filter(
+          (patch) => !patch.fertiliser,
+        ).length;
+        const fertiliserCount = inventory["Fruitful Blend"] ?? new Decimal(0);
+        if (fertiliserCount.lt(unfertilisedPatches)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.insufficientFertiliser", {
+              fertiliser: "Fruitful Blend",
+            }),
+          };
+        }
+        if (unfertilisedPatches === 0) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.allFruitPatchesFertilised"),
+          };
+        }
+        break;
+      }
 
       case "Instant Growth": {
         // Checks if all plots are empty or ready to harvest.
@@ -217,44 +257,91 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
             ? "ready"
             : "growing";
         });
-        return !plotsStatus.includes("growing");
+        if (!plotsStatus.includes("growing")) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noCropsGrowing"),
+          };
+        }
+        break;
       }
 
       case "Tree Blitz": {
-        return Object.values(trees).every((tree) => canChop(tree));
+        if (Object.values(trees).every((tree) => canChop(tree))) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noTreesRecovering"),
+          };
+        }
+        break;
       }
 
       case "Greenhouse Guru": {
-        return Object.values(pots).every((pot) => !pot.plant);
+        if (Object.values(pots).every((pot) => !pot.plant)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noGreenhouseProduceGrowing"),
+          };
+        }
+        break;
       }
 
       case "Instant Gratification": {
-        return getKeys(BUILDING_DAILY_OIL_CAPACITY).every(
-          (building) => !buildings[building]?.[0].crafting,
-        );
+        if (
+          getKeys(BUILDING_DAILY_OIL_CAPACITY).every(
+            (building) => !buildings[building]?.[0].crafting,
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noBuildingsAreCooking"),
+          };
+        }
+        break;
       }
 
       case "Petal Blessed": {
-        return Object.values(flowerBeds).every((bed) => !bed.flower);
+        if (Object.values(flowerBeds).every((bed) => !bed.flower)) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noFlowersGrowing"),
+          };
+        }
+        break;
       }
 
       case "Grease Lightning": {
-        return Object.values(oilReserves).every((reserve) =>
-          canDrillOilReserve(reserve),
-        );
-      }
-      case "Apple-Tastic": {
-        return Object.values({ ...henHouseAnimals, ...barnAnimals }).every(
-          ({ state, awakeAt }) =>
-            state === "sick" || state === "ready" || awakeAt > Date.now(),
-        );
+        if (
+          Object.values(oilReserves).every((reserve) =>
+            canDrillOilReserve(reserve),
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.noOilreservesRefilling"),
+          };
+        }
+        break;
       }
 
-      // Other power skills
-      default:
-        return false;
+      case "Apple-Tastic": {
+        if (
+          Object.values({ ...henHouseAnimals, ...barnAnimals }).every(
+            ({ state, awakeAt }) =>
+              state === "sick" || state === "ready" || awakeAt > Date.now(),
+          )
+        ) {
+          return {
+            disabled: true,
+            reason: t("powerSkills.reason.animalsSickReadyAsleep"),
+          };
+        }
+      }
     }
-  };
+    return { disabled: false, reason: "" };
+  }
+
+  const { disabled, reason } = disabledConditions();
 
   return (
     <SplitScreenView
@@ -348,29 +435,31 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                 />
               </div>
             )}
-            {!(isCropFertiliserSkill || isFruitFertiliserSkill) && (
-              <div className="flex flex-col lg:items-center">
-                <Label
-                  type={powerSkillReady ? "success" : "info"}
-                  icon={
-                    !powerSkillReady ? SUNNYSIDE.icons.stopwatch : undefined
-                  }
-                  secondaryIcon={
-                    powerSkillReady ? SUNNYSIDE.icons.confirm : undefined
-                  }
-                  className="mb-2"
-                >
-                  {powerSkillReady ? (
-                    t("powerSkills.ready")
-                  ) : (
-                    <div className="flex lg:flex-col items-center">
-                      <p className="mr-1">{t("powerSkills.nextUse")}</p>
-                      <TimerDisplay time={nextSkillUseCountdown} />
-                    </div>
-                  )}
-                </Label>
-              </div>
-            )}
+            <div className="flex flex-col lg:items-center">
+              <Label
+                type={
+                  !powerSkillReady ? "info" : disabled ? "danger" : "success"
+                }
+                icon={!powerSkillReady ? SUNNYSIDE.icons.stopwatch : undefined}
+                secondaryIcon={
+                  powerSkillReady && !disabled
+                    ? SUNNYSIDE.icons.confirm
+                    : undefined
+                }
+                className="mb-2"
+              >
+                {!powerSkillReady ? (
+                  <div className="flex lg:flex-col items-center">
+                    <p className="mr-1">{t("powerSkills.nextUse")}</p>
+                    <TimerDisplay time={nextSkillUseCountdown} />
+                  </div>
+                ) : disabled ? (
+                  reason
+                ) : (
+                  t("powerSkills.ready")
+                )}
+              </Label>
+            </div>
           </div>
 
           {power && (
@@ -383,13 +472,13 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
                   >
                     {t("cancel")}
                   </Button>
-                  <Button disabled={disabled()} onClick={useSkill}>
+                  <Button disabled={disabled} onClick={useSkill}>
                     {t("powerSkills.use")}
                   </Button>
                 </>
               ) : (
                 <Button
-                  disabled={disabled()}
+                  disabled={disabled}
                   onClick={() => setUseSkillConfirmation(true)}
                 >
                   {t("powerSkills.use")}
