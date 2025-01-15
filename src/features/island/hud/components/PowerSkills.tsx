@@ -39,7 +39,7 @@ interface PowerSkillsProps {
 export const PowerSkills: React.FC<PowerSkillsProps> = ({ show, onHide }) => {
   const { t } = useAppTranslation();
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} size="lg">
       <CloseButtonPanel
         onClose={onHide}
         container={OuterPanel}
@@ -187,6 +187,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
 
   return (
     <SplitScreenView
+      wideModal
       panel={
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col h-full px-1 py-0">
