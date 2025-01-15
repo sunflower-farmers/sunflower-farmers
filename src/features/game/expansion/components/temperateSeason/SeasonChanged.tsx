@@ -1,8 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Modal } from "components/ui/Modal";
-import { ButtonPanel, InnerPanel, Panel } from "components/ui/Panel";
+import { ButtonPanel, Panel } from "components/ui/Panel";
 import { Label } from "components/ui/Label";
-import { SUNNYSIDE } from "assets/sunnyside";
 import { Button } from "components/ui/Button";
 import { Context } from "features/game/GameProvider";
 
@@ -19,113 +18,41 @@ import { SeasonsIntroduction } from "./SeasonsIntroduction";
 import { useTranslation } from "react-i18next";
 import { IngredientsPopover } from "components/ui/IngredientsPopover";
 import { ModalOverlay } from "components/ui/ModalOverlay";
-import { getRelativeTime } from "lib/utils/time";
 import {
+  CALENDAR_EVENT_ICONS,
   SEASON_DETAILS,
-  SeasonalEventName,
 } from "features/game/types/calendar";
+import { SeasonDayDetails } from "./SeasonDayDetails";
+import { CalendarEventDetails } from "features/game/types/game";
 
-const DUMMY_EVENT_DATA: Record<
-  SeasonalEventName,
-  {
-    icon: string;
-    description: string;
-    resolution?: string;
-  }
-> = {
-  tornado: {
-    icon: SUNNYSIDE.icons.firePitIcon,
-    description: "A destructive tornado past through your farm!",
-    resolution: "Construct wind turbines to dissipate its energy.",
-  },
-  fullMoon: {
-    icon: SUNNYSIDE.icons.water,
-    description: "There was a large tsunami that hit your farm!",
-    resolution: "Build mangroves along the coast to protect your farm.",
-  },
-};
-
-type WeekData = {
-  day: string;
-  event: SeasonalEventName;
-};
-
-const DUMMY_WEEK_DATA: WeekData[] = [
-  { day: "Monday", event: "tornado" },
-  { day: "Tuesday", event: "tsunami" },
-  { day: "Wednesday", event: "tornado" },
-  { day: "Thursday", event: "tsunami" },
-  { day: "Friday", event: "fullMoon" },
-  { day: "Saturday", event: "fullMoon" },
-  { day: "Sunday", event: "fullMoon" },
-];
-
-const SeasonDayDetails: React.FC<{
-  weekDay: number;
-  timestamp: number;
-  onClose: () => void;
-}> = ({ weekDay, timestamp, onClose }) => {
-  const { t } = useTranslation();
-
-  return (
-    <InnerPanel className="shadow">
-      <div className="flex flex-row justify-between mb-2">
-        <Label type="default">{DUMMY_WEEK_DATA[weekDay].event}</Label>
-        <Label type="info">{getRelativeTime(timestamp)}</Label>
-      </div>
-
-      <div className="flex gap-4 mb-2">
-        <div className="flex flex-col items-center">
-          <InnerPanel>
-            <img
-              src={DUMMY_EVENT_DATA[DUMMY_WEEK_DATA[weekDay].event].icon}
-              className="w-12 h-12 object-contain"
-            />
-          </InnerPanel>
-        </div>
-
-        <div className="flex-1 text-sm">
-          {DUMMY_EVENT_DATA[DUMMY_WEEK_DATA[weekDay].event].description}
-        </div>
-      </div>
-
-      {DUMMY_WEEK_DATA[weekDay].event === "unknown" && (
-        <div className="flex flex-col gap-2 my-2 w-full">
-          <Label type="default">{t("temperateSeason.possibleEvents")}</Label>
-          <div className="flex flex-col gap-2">
-            {Object.entries(DUMMY_EVENT_DATA)
-              .filter(([name]) => name !== "Unknown")
-              .map(([name, data]) => (
-                <div key={name} className="flex items-center gap-1">
-                  <img src={data.icon} className="w-6 h-6" />
-
-                  <div className="flex flex-col">
-                    <span className="text-xs">{name}</span>
-                    {data.resolution && (
-                      <span className="text-xxs">{data.resolution}</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      )}
-
-      <Button onClick={onClose}>{t("close")}</Button>
-    </InnerPanel>
-  );
-};
+const _calendar = (state: MachineState) => state.context.state.calendar;
 
 const SeasonWeek = () => {
   const { gameService } = useContext(Context);
 
   const season = useSelector(gameService, _season);
-  const { t } = useTranslation();
+  const calendar = useSelector(gameService, _calendar);
 
   const [showWeekday, setShowWeekday] = useState<number>();
 
   const today = new Date().getUTCDay();
   const weekDayStartsAt = new Date(season.startedAt);
+
+  const makeWeekData = () => {
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(weekDayStartsAt);
+      date.setUTCDate(weekDayStartsAt.getUTCDate() + index);
+
+      const formattedDate = date.toISOString().split("T")[0];
+
+      return {
+        date: date.getUTCDate(),
+        event: calendar.dates.find((e) => e.date === formattedDate),
+      };
+    });
+  };
+
+  const weekData = makeWeekData();
 
   return (
     <div>
@@ -135,7 +62,8 @@ const SeasonWeek = () => {
         className="inset-3 top-4"
       >
         <SeasonDayDetails
-          weekDay={showWeekday ?? 0}
+          season={season.season}
+          event={weekData[showWeekday ?? 0].event as CalendarEventDetails}
           timestamp={new Date(
             weekDayStartsAt.getTime() +
               1000 * 60 * 60 * 24 * (showWeekday ?? 0),
@@ -145,20 +73,22 @@ const SeasonWeek = () => {
       </ModalOverlay>
 
       <div className="grid grid-cols-7 gap-1">
-        {DUMMY_WEEK_DATA.map((data, index) => {
+        {weekData.map((data, index) => {
           return (
             <ButtonPanel
               variant={index < today ? "primary" : "secondary"}
-              key={data.day}
+              key={data.date}
               className="h-12 relative flex items-center justify-center"
               onClick={() => setShowWeekday(index)}
             >
-              <img
-                src={DUMMY_EVENT_DATA[data.event].icon}
-                className="absolute w-6 h-6 object-contain"
-              />
+              {data.event && (
+                <img
+                  src={CALENDAR_EVENT_ICONS[data.event.name]}
+                  className="absolute w-6 h-6 object-contain"
+                />
+              )}
               <span className="absolute -top-1 -right-1 text-xxs">
-                {data.day[0]}
+                {data.date}
               </span>
             </ButtonPanel>
           );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useContext, useState } from "react";
 import { Button } from "components/ui/Button";
 import { Context } from "../../../GameProvider";
@@ -14,13 +15,16 @@ import { useTranslation } from "react-i18next";
 import {
   CalendarEventName,
   SEASON_DETAILS,
-  CALENDAR_EVENT_ICONS,
 } from "features/game/types/calendar";
 import { TemperateSeasonName } from "features/game/types/game";
+import { DateCard } from "./DateCard";
+import { ModalOverlay } from "components/ui/ModalOverlay";
+import { SeasonDayDetails } from "./SeasonDayDetails";
 
-type LocalCalendarDetails = {
-  date: number;
-  month: number;
+export type LocalCalendarDetails = {
+  dateNumber: number;
+  monthNumber: number;
+  dateString: string;
   specialEvent?: CalendarEventName;
   isPastDay: boolean;
   season: TemperateSeasonName;
@@ -42,6 +46,7 @@ export const GameCalendar: React.FC = () => {
   const season = useSelector(gameService, _season);
   const calendar = useSelector(gameService, _calendar);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<LocalCalendarDetails>();
 
   const { t } = useTranslation();
   useUiRefresher({ delay: ONE_MINUTE });
@@ -123,8 +128,9 @@ export const GameCalendar: React.FC = () => {
       const specialEvent = specialEvents[formattedDate];
 
       return {
-        date: date.getUTCDate(),
-        month: date.getUTCMonth() + 1,
+        dateNumber: date.getUTCDate(),
+        monthNumber: date.getUTCMonth() + 1,
+        dateString: formattedDate,
         specialEvent,
         isPastDay: isPastDay(date, today),
         season: dateSeason,
@@ -183,10 +189,33 @@ export const GameCalendar: React.FC = () => {
           </div>
           <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {getCalendarDays().map((details, index) => (
-              <DateCard key={index} index={index} details={details} />
+              <DateCard
+                key={index}
+                index={index}
+                details={details}
+                onClick={() => setSelectedDate(details)}
+              />
             ))}
           </div>
         </Panel>
+        <ModalOverlay
+          show={selectedDate !== undefined}
+          onBackdropClick={() => setSelectedDate(undefined)}
+          className="inset-3"
+        >
+          <SeasonDayDetails
+            season={selectedDate?.season as TemperateSeasonName}
+            event={
+              calendar.dates.find(
+                (date) => date.date === selectedDate?.dateString,
+              )!
+            }
+            timestamp={
+              selectedDate ? new Date(selectedDate.dateString).getTime() : 0
+            }
+            onClose={() => setSelectedDate(undefined)}
+          />
+        </ModalOverlay>
       </Modal>
       <div
         className="absolute z-50 flex flex-col justify-between hover:img-highlight"
@@ -221,44 +250,5 @@ export const GameCalendar: React.FC = () => {
         </div>
       </div>
     </>
-  );
-};
-
-const DateCard: React.FC<{
-  index: number;
-  details: LocalCalendarDetails;
-}> = ({ index, details }) => {
-  const { specialEvent } = details;
-  const seasonIcon = SEASON_DETAILS[details.season].icon;
-
-  return (
-    <Button
-      key={index}
-      className={`min-h-[58px] w-full ${details.isPastDay ? "opacity-50" : ""} relative`}
-      onClick={
-        specialEvent
-          ? () => {
-              // eslint-disable-next-line no-console
-              console.log(specialEvent);
-            }
-          : undefined
-      }
-    >
-      <div className="flex items-center justify-center w-full h-full">
-        <span className="absolute text-xxs -top-1 -left-0.5">
-          {details.date}
-        </span>
-        {specialEvent && (
-          <img
-            src={CALENDAR_EVENT_ICONS[specialEvent]}
-            className="w-5 mt-2.5"
-          />
-        )}
-        <img
-          src={seasonIcon}
-          className="absolute h-[20px] -top-[11px] -right-[11px]"
-        />
-      </div>
-    </Button>
   );
 };
