@@ -70,6 +70,9 @@ const _buildings = (state: MachineState) => state.context.state.buildings;
 const _flowerBeds = (state: MachineState) =>
   state.context.state.flowers.flowerBeds;
 const _oilReserves = (state: MachineState) => state.context.state.oilReserves;
+const _henHouseAnimals = (state: MachineState) =>
+  state.context.state.henHouse.animals;
+const _barnAnimals = (state: MachineState) => state.context.state.barn.animals;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -86,6 +89,8 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const buildings = useSelector(gameService, _buildings);
   const flowerBeds = useSelector(gameService, _flowerBeds);
   const oilReserves = useSelector(gameService, _oilReserves);
+  const henHouseAnimals = useSelector(gameService, _henHouseAnimals);
+  const barnAnimals = useSelector(gameService, _barnAnimals);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -236,6 +241,12 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
       case "Grease Lightning": {
         return Object.values(oilReserves).every((reserve) =>
           canDrillOilReserve(reserve),
+        );
+      }
+      case "Apple-Tastic": {
+        return Object.values({ ...henHouseAnimals, ...barnAnimals }).every(
+          ({ state, awakeAt }) =>
+            state === "sick" || state === "ready" || awakeAt > Date.now(),
         );
       }
 

@@ -134,7 +134,7 @@ function useAppleTastic({ game }: { game: GameState }): GameState {
     // Process each animal
     Object.values(animals).forEach((animal) => {
       const { state, experience, type, awakeAt } = animal;
-      if (state === "sick" || awakeAt > Date.now()) return;
+      if (state === "sick" || state === "ready" || awakeAt > Date.now()) return;
 
       const currentXP = experience;
       const currentLevel = getAnimalLevel(currentXP, type);
