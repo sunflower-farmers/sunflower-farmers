@@ -2781,6 +2781,24 @@ export const BUMPKIN_REVAMP_SKILL_TREE = {
     },
     image: ITEM_DETAILS["Sprout Mix"].image,
   },
+  "Blend-tastic": {
+    name: "Blend-tastic",
+    tree: "Compost",
+    requirements: {
+      points: 1,
+      tier: 1,
+      island: "basic",
+    },
+    disabled: false,
+    power: true,
+    boosts: {
+      buff: {
+        shortDescription: "Put Fruitful Blend on all plots",
+        labelType: "transparent",
+      },
+    },
+    image: ITEM_DETAILS["Fruitful Blend"].image,
+  },
   // Compost - Tier 2
   "Premium Worms": {
     name: "Premium Worms",

@@ -280,9 +280,11 @@ export const RequirementLabel: React.FC<Props> = (props) => {
       case "coins":
         return props.balance >= props.requirement;
       case "sfl":
-        return props.balance.greaterThanOrEqualTo(props.requirement);
+        return props.balance.gte(props.requirement);
       case "item":
-        return props.balance.greaterThanOrEqualTo(props.requirement);
+        return (
+          !props.requirement.lte(0) && props.balance.gte(props.requirement)
+        );
       case "wearable":
         return props.balance > 0;
       case "level":
