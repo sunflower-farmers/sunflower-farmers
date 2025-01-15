@@ -4822,6 +4822,8 @@
   "days.fri": "Fri.",
   "days.sat": "Sat.",
   "days.sun": "Sun.",
+  "calendar.events.tornado.title": "Tornado",
+  "calendar.events.tornado.description": "A powerful tornado that can destroy crops and buildings.",
   "calendar.events.fullMoon.title": "Full Moon",
   "calendar.events.fullMoon.description": "A special event where rare creatures and crops appear.",
   "calendar.events.tsunami.title": "Tsunami",
