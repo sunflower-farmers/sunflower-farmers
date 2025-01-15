@@ -18,7 +18,7 @@ import { getCropPlotTime } from "features/game/events/landExpansion/plant";
 import { INVENTORY_LIMIT } from "features/game/lib/constants";
 import { makeBulkBuySeeds } from "./lib/makeBulkBuyAmount";
 import { getBumpkinLevel } from "features/game/lib/level";
-import { SEEDS, SeedName } from "features/game/types/seeds";
+import { SEASONAL_SEEDS, SEEDS, SeedName } from "features/game/types/seeds";
 import {
   GREENHOUSE_FRUIT_SEEDS,
   PATCH_FRUIT,
@@ -50,8 +50,24 @@ import {
   isMediumCrop,
 } from "features/game/events/landExpansion/harvest";
 import { Restock } from "./restock/Restock";
+import { TemperateSeasonName } from "features/game/types/game";
+import { secondsToString } from "lib/utils/time";
+import { secondsLeftInSeason } from "features/game/types/seasons";
+import { secondsTillWeekReset } from "features/game/lib/factions";
 
-export const Seeds: React.FC = () => {
+import springIcon from "assets/icons/spring.webp";
+import summerIcon from "assets/icons/summer.webp";
+import autumnIcon from "assets/icons/autumn.webp";
+import winterIcon from "assets/icons/winter.webp";
+
+const SEASON_ICONS: Record<TemperateSeasonName, string> = {
+  spring: springIcon,
+  summer: summerIcon,
+  autumn: autumnIcon,
+  winter: winterIcon,
+};
+
+export const SeasonalSeeds: React.FC = () => {
   const [selectedName, setSelectedName] = useState<SeedName>("Sunflower Seed");
   const [confirmBuyModal, showConfirmBuyModal] = useState(false);
 
@@ -248,21 +264,17 @@ export const Seeds: React.FC = () => {
     return getFruitHarvests(state);
   };
 
-  const NEW_SEEDS: SeedName[] = [
-    "Rhubarb Seed",
-    "Zuchinni Seed",
-    "Yam Seed",
-    "Brocolli Seed",
-    "Pepper Seed",
-    "Onion Seed",
-    "Turnip Seed",
-    "Artichoke Seed",
+  const currentSeason = state.season.season;
+  let seasons: TemperateSeasonName[] = ["spring", "summer", "autumn", "winter"];
+
+  // Reorder seasons to start with current season
+  const currentSeasonIndex = seasons.indexOf(currentSeason);
+  seasons = [
+    ...seasons.slice(currentSeasonIndex),
+    ...seasons.slice(0, currentSeasonIndex),
   ];
 
   const harvestCount = getHarvestCount();
-  const seeds = getKeys(SEEDS()).filter(
-    (seed) => !SEEDS()[seed].disabled && !NEW_SEEDS.includes(seed),
-  );
 
   return (
     <SplitScreenView
@@ -287,172 +299,53 @@ export const Seeds: React.FC = () => {
                 }
               : undefined,
             timeSeconds: getPlantSeconds(),
+            restriction: {
+              icon: SEASON_ICONS[currentSeason],
+              text: plantingSpot,
+            },
           }}
           actionView={Action()}
         />
       }
       content={
         <div className="pl-1">
-          <Label
-            icon={CROP_LIFECYCLE.Sunflower.crop}
-            type="default"
-            className="ml-2 mb-1"
-          >
-            {`Basic Crops`}
-          </Label>
-          <div className="flex flex-wrap mb-2">
-            {seeds
-              .filter((name) => name in CROP_SEEDS)
-              .filter((name) => isBasicCrop(name.split(" ")[0] as CropName))
-              .filter(
-                (name) =>
-                  name !== "Barley Seed" || hasFeatureAccess(state, "BARLEY"),
-              )
-              .map((name: SeedName) => (
-                <Box
-                  isSelected={selectedName === name}
-                  key={name}
-                  onClick={() => onSeedClick(name)}
-                  image={ITEM_DETAILS[name].image}
-                  showOverlay={isSeedLocked(name)}
-                  secondaryImage={
-                    isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                  }
-                  count={inventory[name]}
-                />
-              ))}
-          </div>
-          <Label
-            icon={CROP_LIFECYCLE.Carrot.crop}
-            type="default"
-            className="ml-2 mb-1"
-          >
-            {`Medium Crops`}
-          </Label>
-          <div className="flex flex-wrap mb-2">
-            {seeds
-              .filter((name) => name in CROP_SEEDS)
-              .filter((name) => isMediumCrop(name.split(" ")[0] as CropName))
-              .map((name: SeedName) => (
-                <Box
-                  isSelected={selectedName === name}
-                  key={name}
-                  onClick={() => onSeedClick(name)}
-                  image={ITEM_DETAILS[name].image}
-                  showOverlay={isSeedLocked(name)}
-                  secondaryImage={
-                    isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                  }
-                  count={inventory[name]}
-                />
-              ))}
-          </div>
-          <Label
-            icon={CROP_LIFECYCLE.Kale.crop}
-            type="default"
-            className="ml-2 mb-1"
-          >
-            {`Advanced Crops`}
-          </Label>
-          <div className="flex flex-wrap mb-2">
-            {seeds
-              .filter((name) => name in CROP_SEEDS)
-              .filter((name) => isAdvancedCrop(name.split(" ")[0] as CropName))
-              .filter(
-                (name) =>
-                  name !== "Barley Seed" || hasFeatureAccess(state, "BARLEY"),
-              )
-              .map((name: SeedName) => (
-                <Box
-                  isSelected={selectedName === name}
-                  key={name}
-                  onClick={() => onSeedClick(name)}
-                  image={ITEM_DETAILS[name].image}
-                  showOverlay={isSeedLocked(name)}
-                  secondaryImage={
-                    isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                  }
-                  count={inventory[name]}
-                />
-              ))}
-          </div>
-          <Label icon={orange} type="default" className="ml-2 mb-1">
-            {t("fruits")}
-          </Label>
-          <div className="flex flex-wrap mb-2">
-            {seeds
-              .filter((name) => name in PATCH_FRUIT_SEEDS())
-              .map((name: SeedName) => (
-                <Box
-                  isSelected={selectedName === name}
-                  key={name}
-                  onClick={() => onSeedClick(name)}
-                  image={ITEM_DETAILS[name].image}
-                  showOverlay={isSeedLocked(name)}
-                  secondaryImage={
-                    isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                  }
-                  count={inventory[name]}
-                />
-              ))}
-          </div>
-          <>
-            <Label
-              icon={SUNNYSIDE.icons.seedling}
-              type="default"
-              className="ml-2 mb-1"
-            >
-              {t("flowers")}
-            </Label>
-            <div className="flex flex-wrap mb-2">
-              {seeds
-                .filter((name) => name in FLOWER_SEEDS())
-                .map((name: SeedName) => (
+          {seasons.map((season, index) => (
+            <>
+              <div className="flex justify-between">
+                <Label
+                  icon={SEASON_ICONS[season]}
+                  type="default"
+                  className="ml-2 mb-1 capitalize"
+                >
+                  {`${season}`}
+                </Label>
+                {index === 0 && (
+                  <Label
+                    icon={SUNNYSIDE.icons.stopwatch}
+                    type="transparent"
+                    className="mb-1"
+                  >
+                    {`${secondsToString(secondsTillWeekReset(), {
+                      length: "short",
+                    })} left`}
+                  </Label>
+                )}
+              </div>
+              <div className="flex flex-wrap mb-2">
+                {SEASONAL_SEEDS[season].map((name: SeedName) => (
                   <Box
                     isSelected={selectedName === name}
                     key={name}
                     onClick={() => onSeedClick(name)}
-                    image={ITEM_DETAILS[name].image}
+                    image={ITEM_DETAILS[SEEDS()[name].yield ?? name].image}
                     showOverlay={isSeedLocked(name)}
-                    secondaryImage={
-                      isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                    }
+                    // secondaryImage={SUNNYSIDE.icons.seedling}
                     count={inventory[name]}
                   />
                 ))}
-            </div>
-
-            <>
-              <Label
-                icon={SUNNYSIDE.icons.greenhouseIcon}
-                type="default"
-                className="ml-2 mb-1"
-              >
-                {t("greenhouse")}
-              </Label>
-              <div className="flex flex-wrap mb-2">
-                {seeds
-                  .filter(
-                    (name) =>
-                      name in GREENHOUSE_SEEDS ||
-                      name in GREENHOUSE_FRUIT_SEEDS(),
-                  )
-                  .map((name: SeedName) => (
-                    <Box
-                      isSelected={selectedName === name}
-                      key={name}
-                      onClick={() => onSeedClick(name)}
-                      image={ITEM_DETAILS[name].image}
-                      showOverlay={isSeedLocked(name)}
-                      secondaryImage={
-                        isSeedLocked(name) ? SUNNYSIDE.icons.lock : undefined
-                      }
-                      count={inventory[name]}
-                    />
-                  ))}
               </div>
             </>
-          </>
+          ))}
         </div>
       }
     />

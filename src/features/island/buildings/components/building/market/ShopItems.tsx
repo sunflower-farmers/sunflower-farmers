@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Seeds } from "./Seeds";
 import { Crops } from "./Crops";
 import { Equipped } from "features/game/types/bumpkin";
@@ -10,6 +10,9 @@ import { NPC_WEARABLES } from "lib/npcs";
 import { SpeakingText } from "features/game/components/SpeakingModal";
 import { OuterPanel, Panel } from "components/ui/Panel";
 import { useAppTranslation } from "lib/i18n/useAppTranslations";
+import { hasFeatureAccess } from "lib/flags";
+import { SeasonalSeeds } from "./SeasonalSeeds";
+import { Context } from "features/game/GameProvider";
 
 const host = window.location.host.replace(/^www\./, "");
 const LOCAL_STORAGE_KEY = `betty-read.${host}-${window.location.pathname}`;
@@ -43,7 +46,7 @@ export const ShopItems: React.FC<Props> = ({
   const [tab, setTab] = useState(0);
   const [showIntro, setShowIntro] = React.useState(!hasReadIntro());
   const { t } = useAppTranslation();
-
+  const { gameService } = useContext(Context);
   const bumpkinParts: Partial<Equipped> = NPC_WEARABLES.betty;
 
   if (showIntro) {
@@ -101,7 +104,15 @@ export const ShopItems: React.FC<Props> = ({
       onClose={onClose}
       container={OuterPanel}
     >
-      {tab === 0 && <Seeds />}
+      {tab === 0 &&
+        (hasFeatureAccess(
+          gameService.getSnapshot().context.state,
+          "SEASONAL_SEEDS",
+        ) ? (
+          <SeasonalSeeds />
+        ) : (
+          <Seeds />
+        ))}
       {tab === 1 && <Crops />}
     </CloseButtonPanel>
   );

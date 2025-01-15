@@ -278,7 +278,8 @@ export const GameOptionsModal: React.FC<GameOptionsModalProps> = ({
   const [selected, setSelected] = useState<SettingMenuId>("main");
 
   useEffect(() => {
-    preloadSubscriptions(token, gameService.state.context.farmId);
+    // TEMP disable - causing local UI crash
+    // preloadSubscriptions(token, gameService.state.context.farmId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
