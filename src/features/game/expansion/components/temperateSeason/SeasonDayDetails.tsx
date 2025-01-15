@@ -5,6 +5,7 @@ import {
   CALENDAR_EVENT_ICONS,
   CalendarEventName,
   SEASON_DETAILS,
+  SeasonalEventName,
 } from "features/game/types/calendar";
 import {
   CalendarEventDetails,
@@ -150,7 +151,12 @@ export const SeasonDayDetails: React.FC<Props> = ({
                   />
 
                   <div className="flex flex-col">
-                    <span className="text-xs">{name}</span>
+                    <span className="text-xs">
+                      {t(
+                        DUMMY_EVENT_INFORMATION[name as SeasonalEventName]
+                          .title,
+                      )}
+                    </span>
                     {data.prevention && (
                       <span className="text-xxs">{data.prevention}</span>
                     )}
