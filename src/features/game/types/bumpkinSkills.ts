@@ -652,6 +652,30 @@ export const BUMPKIN_REVAMP_SKILL_TREE = {
       },
     },
   },
+  "No Axe No Worries": {
+    name: "No Axe No Worries",
+    tree: "Fruit Patch",
+    disabled: false,
+    requirements: {
+      points: 1,
+      tier: 1,
+      island: "spring",
+    },
+    boosts: {
+      buff: {
+        shortDescription: translate("skill.noAxeNoWorries.buff"),
+        labelType: "success",
+        boostTypeIcon: powerup,
+      },
+      debuff: {
+        shortDescription: translate("skill.noAxeNoWorries.debuff"),
+        labelType: "danger",
+        boostTypeIcon: redArrowDown,
+        boostedItemIcon: SUNNYSIDE.resource.wood,
+      },
+    },
+    image: ITEM_DETAILS.Axe.image,
+  },
   // Fruit - Tier 2
   Catchup: {
     name: "Catchup",
@@ -669,30 +693,6 @@ export const BUMPKIN_REVAMP_SKILL_TREE = {
       },
     },
     disabled: false,
-  },
-  "No Axe No Worries": {
-    name: "No Axe No Worries",
-    tree: "Fruit Patch",
-    disabled: false,
-    requirements: {
-      points: 2,
-      tier: 2,
-      island: "spring",
-    },
-    boosts: {
-      buff: {
-        shortDescription: translate("skill.noAxeNoWorries.buff"),
-        labelType: "success",
-        boostTypeIcon: powerup,
-      },
-      debuff: {
-        shortDescription: translate("skill.noAxeNoWorries.debuff"),
-        labelType: "danger",
-        boostTypeIcon: redArrowDown,
-        boostedItemIcon: SUNNYSIDE.resource.wood,
-      },
-    },
-    image: ITEM_DETAILS.Axe.image,
   },
   "Fruity Woody": {
     name: "Fruity Woody",
