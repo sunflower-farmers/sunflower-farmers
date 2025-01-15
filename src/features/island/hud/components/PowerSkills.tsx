@@ -62,6 +62,7 @@ const _inventory = (state: MachineState) => state.context.state.inventory;
 const _crops = (state: MachineState) => state.context.state.crops;
 const _fruitPatches = (state: MachineState) => state.context.state.fruitPatches;
 const _trees = (state: MachineState) => state.context.state.trees;
+const _pots = (state: MachineState) => state.context.state.greenhouse.pots;
 
 interface PowerSkillsContentProps {
   onClose: () => void;
@@ -74,6 +75,7 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
   const crops = useSelector(gameService, _crops);
   const fruitPatches = useSelector(gameService, _fruitPatches);
   const trees = useSelector(gameService, _trees);
+  const pots = useSelector(gameService, _pots);
   const { skills, previousPowerUseAt } = bumpkin;
 
   const powerSkills = getPowerSkills();
@@ -210,6 +212,13 @@ const PowerSkillsContent: React.FC<PowerSkillsContentProps> = ({ onClose }) => {
           canChop(tree),
         );
         return areTreesReplenishing || !powerSkillReady || !itemsRequired;
+      }
+
+      case "Greenhouse Guru": {
+        const areGreenhousePotsEmpty = Object.values(pots).every(
+          (pot) => !pot.plant,
+        );
+        return areGreenhousePotsEmpty || !powerSkillReady || !itemsRequired;
       }
 
       // Other power skills
